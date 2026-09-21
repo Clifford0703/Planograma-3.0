@@ -259,6 +259,24 @@ st.markdown(f"""
             box-shadow: {t["card_shadow"]};
         }}
 
+        .dash-card-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid {t["border_subtle"]};
+        }}
+
+        .dash-card-title {{
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: {text_primary};
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }}
+
         .chart-scroll-wrapper {{
             width: 100%;
             overflow-x: auto;
@@ -353,7 +371,7 @@ def obtener_alerta_css(estado, stock_val):
         else: return "alerta-ok", "Stock OK"
     else: return "alerta-desconocido", "Desconocido"
 
-# --- GENERADOR DEL PASILLO INTERACTIVO (CON PASILLO / LATERAL Y PALETA CLARA) ---
+# --- GENERADOR DEL PASILLO INTERACTIVO ---
 def generar_html_pasillo_interactivo(df, es_realograma=False):
     df = df.copy()
     df['FilaOriginal'] = range(len(df))
@@ -560,7 +578,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
           margin: 0; 
           padding: 0; 
           height: auto; 
-          min-height: 100vh;
+          min-height: 100vh; 
         }}
         
         .main-container {{ 
@@ -799,8 +817,8 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
           height: 100vh !important; 
           padding: 0 !important; 
           border: none !important; 
-          display: flex !important;
-          flex-direction: column !important;
+          display: flex !important; 
+          flex-direction: column !important; 
           overflow: hidden !important; 
         }}
         .aisle-wrapper:fullscreen .fullscreen-legend-bar, 
@@ -852,7 +870,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
           display: flex; 
           width: 100%; 
           height: auto;
-          min-height: fit-content;
+          min-height: fit-content; 
           transform-origin: 0 0; 
           will-change: transform; 
           justify-content: flex-start; 
@@ -1116,7 +1134,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
           </div>
         </div>
 
-        <!-- LEYENDA CLARA PASTEL EXACTA -->
+        <!-- LEYENDA CLARA PASTEL -->
         <div class="legend-panel">
           <span class="legend-title">📍 Leyenda:</span>
           <div class="legend-chips">
@@ -1778,7 +1796,7 @@ def cargar_todas_las_fuentes():
             df_sap['Grupo de Artículo'] = df_sap_raw[col_n_ga].fillna('SIN DATOS').astype(str).str.strip()
             df_sap = df_sap[df_sap['CodGA_Str'] != ""].drop_duplicates(subset=['CodGA_Str'])
 
-        # --- APLICACIÓN DE CRUCES SECUENCIALES ORIGINALES PARA EL PASILLO (DF_MATRIZ) ---
+        # --- APLICACIÓN DE CRUCES PARA EL PASILLO (DF_MATRIZ) ---
         df_pasillo_base = df_matriz.copy()
         
         if not df_cob.empty:
@@ -1819,17 +1837,16 @@ def cargar_todas_las_fuentes():
 
             df_pasillo_base.drop(columns=['CodGA_Str', 'G.A._Str'], inplace=True, errors='ignore')
 
-        # Rellenar nulos de DF_MATRIZ (PASILLO)
         for col, val_def in [('Stock', -999.0), ('Cobertura', -999.0), ('Venta', -999.0), ('Monto Margen', -999.0), ('% Part', -999.0)]:
             df_pasillo_base[col] = df_pasillo_base[col].fillna(val_def) if col in df_pasillo_base.columns else val_def
 
-        for col, val_def in [('Estado', 'SIN DATOS'), ('Departamento', 'SIN DATOS'), ('Sección', 'SIN DATOS'), ('Categoría', 'SIN DATOS'), ('Grupo de Artículo', 'SIN DATOS'), ('G.A.', 'SIN DATOS'), ('Links de fotos', 'SIN DATOS'), ('PASILLO', '1'), ('LATERAL', 'A')]:
+        for col, val_def in [('Estado', 'SIN DATOS'), ('Departamento', 'SIN DATOS'), ('Sección', 'SIN DATOS'), ('Categoría', 'SIN DATOS'), ('Grupo de Artículo', 'SIN DATOS'), ('G.A.', 'SIN DATOS'), ('Links de fotos', 'SIN DATOS'), ('Descripción', 'SIN DATOS'), ('EAN', 'SIN DATOS'), ('PASILLO', '1'), ('LATERAL', 'A')]:
             df_pasillo_base[col] = df_pasillo_base[col].fillna(val_def).astype(str).str.strip() if col in df_pasillo_base.columns else val_def
 
         if 'Bandeja' in df_pasillo_base.columns and 'EAN' in df_pasillo_base.columns:
             df_pasillo_base = df_pasillo_base.dropna(subset=["Bandeja", "EAN"], how="all")
 
-        # --- CONSTRUCCIÓN DE LA TABLA DE SKU ÚNICO CON EL NUEVO REQUISITO ---
+        # --- CONSTRUCCIÓN DE LA TABLA DE SKU ÚNICO ---
         if not df_vta.empty:
             materiales_vta_validos = df_vta[['Material_Str']].copy()
             materiales_vta_validos = materiales_vta_validos[~materiales_vta_validos['Material_Str'].str.contains('-', na=False)]
@@ -1912,7 +1929,7 @@ with col_head1:
             <div style="font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; color: {text_primary};">
                 🏪 Planograma <span style="color: {t['accent']}; font-weight: 800;">2.0</span>
             </div>
-            <span style="background: {t['accent']}1a; color: {t['accent']}; font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 12px; border: 1px solid {t['accent']}33;">ENTERPRISE</span>
+            <span style="background: {t['accent']}1a; color: {t['accent']}; font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 12px; border: 1px solid {t['accent']}33;">OPERATIONS & ANALYTICS</span>
         </div>
     """, unsafe_allow_html=True)
     
@@ -1953,7 +1970,6 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
     
     df_base = df_base.loc[:, ~df_base.columns.duplicated()].copy()
     
-    # Preparar df_unicos para el dashboard y la radiografía
     df_unicos = df_base.drop_duplicates(subset=['COD REAL']).copy()
     df_unicos = df_unicos[df_unicos['COD REAL'].astype(str).str.strip() != ""]
     
@@ -1965,54 +1981,85 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
     ])
     
     # =========================================================================
-    # --- PESTAÑA 0: RESUMEN EJECUTIVO (RADIOGRAFÍA GERENCIAL DE LA TIENDA) ---
+    # --- PESTAÑA 0: RESUMEN EJECUTIVO (GERENCIA DE OPERACIONES) ---
     # =========================================================================
     with tab_resumen:
         st.markdown(f"<h3 style='color: {text_primary}; margin-top:0;'>Radiografía Operativa y Comercial de la Tienda</h3>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color: {text_muted}; font-size:0.88rem;'>Auditoría integral de piso: quiebres de inventario, códigos fuera de planograma y ventas en riesgo.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: {text_muted}; font-size:0.88rem;'>Control de servicio en góndola (OSA), impacto financiero de quiebres y calidad del surtido exhibido.</p>", unsafe_allow_html=True)
         
-        # 1. Cálculos de la base completa del planograma
+        # Métricas calculadas para la gerencia de operaciones
         tot_skus_plano = len(df_unicos)
+        
         quiebres_df = df_unicos[(df_unicos['Estado'].str.strip().str.upper() == 'A') & (df_unicos['Stock_Num'] <= 0)]
         tot_quiebres = len(quiebres_df)
-        pct_quiebres = (tot_quiebres / tot_skus_plano) * 100 if tot_skus_plano > 0 else 0
+        pct_quiebres = (tot_quiebres / tot_skus_plano * 100) if tot_skus_plano > 0 else 0
         
+        # OSA: On-Shelf Availability (Disponibilidad en góndola de los SKUs activos en plano)
+        osa_pct = 100.0 - pct_quiebres
+        
+        # SKUs bloqueados ocupando espacio
         bloqueados_df = df_unicos[df_unicos['Estado'].str.strip().str.upper() == 'B']
         tot_bloqueados = len(bloqueados_df)
         
+        # SKUs con sobrestock / capital inmovilizado en repisa (Cobertura >= 30 días)
+        sobredisp_df = df_unicos[df_unicos['Cob_Num'] >= 30]
+        tot_sobredisp = len(sobredisp_df)
+        
+        # Venta y margen total del planograma
         ventas_tot_plano = df_unicos['Venta_Num'].sum()
         margen_tot_plano = df_unicos['Margen_Num'].sum()
         margen_pct_plano = (margen_tot_plano / ventas_tot_plano * 100) if ventas_tot_plano > 0 else 0
         
-        # 2. Análisis de códigos NO incluidos en el planograma
+        # Venta promedio que representan los productos que hoy están en quiebre
+        venta_en_riesgo = quiebres_df['Venta_Num'].sum()
+        
+        # SKUs huérfanos (generan venta pero NO están en el planograma físico)
         df_no_plano = df_sku_unico_global[
             df_sku_unico_global['Ubicación(es)'].isna() | 
             (df_sku_unico_global['Ubicación(es)'].astype(str).str.strip() == "") | 
             (df_sku_unico_global['Ubicación(es)'].astype(str).str.strip() == "SIN DATOS")
         ].copy()
-        
         tot_no_plano = len(df_no_plano)
         ventas_no_plano = df_no_plano['Venta'].apply(lambda x: 0.0 if safe_float(x, -999.0) == -999.0 else safe_float(x, 0.0)).sum()
-        
-        # Venta promedio histórica que se pierde/arriesga por quiebre
-        venta_en_riesgo = quiebres_df['Venta_Num'].sum()
 
-        # Fila 1: KPIs Principales
-        kpi_c1, kpi_c2, kpi_c3, kpi_c4, kpi_c5 = st.columns(5)
-        kpi_c1.metric("SKUs en Planograma", f"{tot_skus_plano}", "Exhibición física activa")
-        kpi_c2.metric("Quiebres en Piso (OOS)", f"{tot_quiebres} SKUs", f"{pct_quiebres:.1f}% en quiebre", delta_color="inverse")
-        kpi_c3.metric("SKUs Fuera de Plano", f"{tot_no_plano}", "Venden sin ubicación", delta_color="inverse")
-        kpi_c4.metric("SKUs Bloqueados (B)", f"{tot_bloqueados}", "Retirar de góndola", delta_color="inverse")
-        kpi_c5.metric("Ventas Planograma", f"S/ {ventas_tot_plano:,.0f}", f"Margen: {margen_pct_plano:.1f}%")
+        # TARJETAS DE INDICADORES DE PRIMER NIVEL
+        st.markdown(f"""
+            <div class="fin-kpi-container">
+                <div class="fin-kpi-card" style="border-bottom: 4px solid #10b981;">
+                    <div class="fin-kpi-title"><span>Nivel de Servicio en Góndola</span><span>🎯</span></div>
+                    <div class="fin-kpi-val" style="color: {'#10b981' if osa_pct >= 95 else ('#f59e0b' if osa_pct >= 90 else '#ef4444')};">{osa_pct:.1f}%</div>
+                    <div class="fin-kpi-subtitle"><b>OSA (On-Shelf Availability)</b> meta &gt; 95%</div>
+                </div>
+                <div class="fin-kpi-card" style="border-bottom: 4px solid #ef4444;">
+                    <div class="fin-kpi-title"><span>Quiebres de Stock (0)</span><span>🚨</span></div>
+                    <div class="fin-kpi-val" style="color: #ef4444;">{tot_quiebres}</div>
+                    <div class="fin-kpi-subtitle"><b>{pct_quiebres:.1f}%</b> del surtido activo quebrado</div>
+                </div>
+                <div class="fin-kpi-card" style="border-bottom: 4px solid #64748b;">
+                    <div class="fin-kpi-title"><span>SKUs Bloqueados (B)</span><span>🚫</span></div>
+                    <div class="fin-kpi-val" style="color: #64748b;">{tot_bloqueados}</div>
+                    <div class="fin-kpi-subtitle">Espacio ocioso a retirar del plano</div>
+                </div>
+                <div class="fin-kpi-card" style="border-bottom: 4px solid #f59e0b;">
+                    <div class="fin-kpi-title"><span>Venta sin Planograma</span><span>📦</span></div>
+                    <div class="fin-kpi-val" style="color: #d97706;">{tot_no_plano}</div>
+                    <div class="fin-kpi-subtitle">SKUs huérfanos con venta activa</div>
+                </div>
+                <div class="fin-kpi-card" style="border-bottom: 4px solid #8b5cf6;">
+                    <div class="fin-kpi-title"><span>Venta Total en Plano</span><span>💳</span></div>
+                    <div class="fin-kpi-val" style="color: #2563eb;">S/ {ventas_tot_plano/1000:,.1f}K</div>
+                    <div class="fin-kpi-subtitle">Margen Bruto: <b>{margen_pct_plano:.1f}%</b> (S/ {margen_tot_plano/1000:,.1f}K)</div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
         
-        # Fila 2: Alertas de Impacto Monetario
-        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+        # ALERTAS DE IMPACTO FINANCIERO Y OPERATIVO DIRECTO
         col_alert1, col_alert2 = st.columns(2)
         with col_alert1:
             st.markdown(f"""
                 <div class="insight-box" style="background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b;">
                     <b>🚨 Venta Directa en Riesgo por Quiebres: S/ {venta_en_riesgo:,.2f}</b><br>
-                    Hay <b>{tot_quiebres} productos con Stock 0</b> en piso que generan ventas activas. Su desabastecimiento frena la rotación inmediata.
+                    Los <b>{tot_quiebres} productos con Stock 0</b> en piso acumulan ventas activas. Su desabastecimiento frena la rotación y causa fuga inmediata de clientes.
                 </div>
             """, unsafe_allow_html=True)
             
@@ -2020,66 +2067,162 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             st.markdown(f"""
                 <div class="insight-box" style="background-color: #fef3c7; border-left: 4px solid #f59e0b; color: #78350f;">
                     <b>⚠️ Venta Huérfana (Sin Planograma): S/ {ventas_no_plano:,.2f}</b><br>
-                    Existen <b>{tot_no_plano} SKUs con ventas</b> registradas que no cuentan con un espacio físico asignado formalmente en el plano.
+                    Existen <b>{tot_no_plano} SKUs con ventas registradas</b> que no cuentan con un espacio físico asignado en el plano (exhibición desordenada o fuera de estándar).
                 </div>
             """, unsafe_allow_html=True)
             
-        st.markdown("<hr style='border-color: #cbd5e1; margin: 16px 0;'>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
         
-        # Fila 3: Gráficos de Diagnóstico Operativo
-        r2c1, r2c2 = st.columns([4.2, 5.8])
+        # SECCIÓN ANALÍTICA: QUIEBRES VS PARTICIPACIÓN DE VENTA Y SALUD DEL STOCK
+        col_g1, col_g2 = st.columns([6.2, 3.8])
         
-        with r2c1:
-            st.markdown(f"<h5 style='color: {text_secondary}; margin-bottom: 6px;'>Salud del Surtido en Góndola</h5>", unsafe_allow_html=True)
+        with col_g1:
+            st.markdown(f"""
+                <div style="font-size: 0.88rem; font-weight: 800; color: {text_primary}; padding-top: 4px; margin-bottom: 6px;">
+                    🔥 Quiebres por Categoría vs % Participación de Ventas <span style="font-size: 0.70rem; color: {text_secondary}; font-weight: 700;">(PRIORIZACIÓN OPERATIVA)</span>
+                </div>
+            """, unsafe_allow_html=True)
             
-            def get_health(row):
-                if str(row['Estado']).strip().upper() == 'B': return 'Bloqueado'
+            st.markdown('<div class="dash-card">', unsafe_allow_html=True)
+            
+            # Agrupar quiebres y ventas por categoría
+            ventas_por_cat = df_unicos.groupby('Categoría')['Venta_Num'].sum()
+            total_vta_unicos = ventas_por_cat.sum()
+            quiebres_por_cat = quiebres_df.groupby('Categoría')['COD REAL'].count()
+            
+            df_cat_ops = pd.DataFrame({
+                'Quiebres': quiebres_por_cat,
+                'Venta': ventas_por_cat
+            }).fillna(0).reset_index()
+            
+            df_cat_ops = df_cat_ops[~df_cat_ops['Categoría'].isin(['SIN DATOS', 'S/C', 'nan', ''])].copy()
+            df_cat_ops['Part_Venta'] = (df_cat_ops['Venta'] / total_vta_unicos) if total_vta_unicos > 0 else 0
+            
+            # Ordenar por quiebres y filtrar top 10
+            df_cat_ops = df_cat_ops.sort_values(by=['Quiebres', 'Part_Venta'], ascending=[False, False]).head(10)
+            
+            fig_ops = make_subplots(specs=[[{"secondary_y": True}]])
+            
+            # Barras: Cantidad de Quiebres
+            fig_ops.add_trace(
+                go.Bar(
+                    x=df_cat_ops['Categoría'],
+                    y=df_cat_ops['Quiebres'],
+                    name="SKUs en Quiebre (Stock 0)",
+                    text=df_cat_ops['Quiebres'].apply(lambda x: f"{int(x)} Q" if x > 0 else "0"),
+                    textposition='inside',
+                    insidetextanchor='middle',
+                    textfont=dict(color='#ffffff', size=11, family='Inter', weight='bold'),
+                    marker=dict(color='#ef4444', line=dict(color='#b91c1c', width=1.5)),
+                    hovertemplate="<b>%{x}</b><br>Quiebres: %{y} SKUs<extra></extra>"
+                ), secondary_y=False
+            )
+            
+            # Línea: % de Participación de Ventas
+            fig_ops.add_trace(
+                go.Scatter(
+                    x=df_cat_ops['Categoría'],
+                    y=df_cat_ops['Part_Venta'],
+                    name="% Part. Venta en Tienda",
+                    mode="lines+markers+text",
+                    text=df_cat_ops['Part_Venta'].apply(lambda x: f"{x*100:.1f}%"),
+                    textposition='top center',
+                    textfont=dict(color='#2563eb', size=11, family='Inter', weight='bold'),
+                    marker=dict(color='#2563eb', size=9, symbol='circle', line=dict(color='#ffffff', width=2)),
+                    line=dict(color='#2563eb', width=3, shape='spline'),
+                    hovertemplate="<b>%{x}</b><br>Participación: %{text}<extra></extra>"
+                ), secondary_y=True
+            )
+            
+            fig_ops.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                hovermode="x unified",
+                legend=dict(orientation="h", yanchor="bottom", y=1.05, xanchor="right", x=1, font=dict(color=text_primary, size=10)),
+                margin=dict(t=20, b=20, l=10, r=10),
+                xaxis=dict(showgrid=False, color=text_primary, tickfont=dict(size=10, weight='bold', color=text_primary)),
+                yaxis=dict(title="SKUs Quebrados", showgrid=True, gridcolor=t["grid_color"], color=text_primary, zeroline=False),
+                yaxis2=dict(title="% Participación Ventas", showgrid=False, color='#2563eb', tickformat=".0%", zeroline=False)
+            )
+            
+            fig_ops.update_xaxes(fixedrange=True)
+            fig_ops.update_yaxes(fixedrange=True)
+            st.plotly_chart(fig_ops, use_container_width=True, config={'displayModeBar': False})
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+        with col_g2:
+            st.markdown(f"""
+                <div style="font-size: 0.88rem; font-weight: 800; color: {text_primary}; padding-top: 4px; margin-bottom: 6px;">
+                    🎯 Distribución de la Salud del Stock <span style="font-size: 0.70rem; color: {text_secondary}; font-weight: 700;">(SURTIDO TOTAL)</span>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown('<div class="dash-card">', unsafe_allow_html=True)
+            
+            def get_health_label(row):
+                if str(row['Estado']).strip().upper() == 'B': return 'Bloqueado (Retirar)'
                 elif row['Stock_Num'] <= 0: return 'Quiebre (Stock 0)'
-                elif row['Stock_Num'] <= 5: return 'Alerta Baja (1 a 5)'
-                else: return 'Stock OK (>5)'
+                elif row['Stock_Num'] <= 5: return 'Alerta Baja (1-5)'
+                else: return 'Stock Adecuado (>5)'
             
-            df_unicos['Salud_Inv'] = df_unicos.apply(get_health, axis=1)
-            health_counts = df_unicos['Salud_Inv'].value_counts().reset_index()
-            health_counts.columns = ['Estado de Stock', 'Cantidad']
+            df_unicos['Salud_Estado'] = df_unicos.apply(get_health_label, axis=1)
+            dist_health = df_unicos['Salud_Estado'].value_counts().reset_index()
+            dist_health.columns = ['Estado', 'Cantidad']
             
-            color_map = {
-                'Stock OK (>5)': '#10b981', 
-                'Alerta Baja (1 a 5)': '#f59e0b', 
-                'Quiebre (Stock 0)': '#ef4444', 
-                'Bloqueado': '#64748b'
+            color_map_h = {
+                'Stock Adecuado (>5)': '#10b981',
+                'Alerta Baja (1-5)': '#f59e0b',
+                'Quiebre (Stock 0)': '#ef4444',
+                'Bloqueado (Retirar)': '#64748b'
             }
             
-            fig_h = px.pie(health_counts, values='Cantidad', names='Estado de Stock', hole=0.55, 
-                           color='Estado de Stock', color_discrete_map=color_map)
-            fig_h.update_traces(textinfo='percent', textposition='inside', insidetextorientation='horizontal', 
-                                textfont=dict(size=12, weight='bold', color='#ffffff'))
-            fig_h.update_layout(showlegend=True, 
-                                legend=dict(orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5, font=dict(color=text_primary)),
-                                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=10, b=10, l=10, r=10))
+            fig_h_pie = px.pie(
+                dist_health, values='Cantidad', names='Estado', hole=0.58,
+                color='Estado', color_discrete_map=color_map_h
+            )
+            fig_h_pie.update_traces(
+                textinfo='percent',
+                textposition='inside',
+                insidetextorientation='horizontal',
+                textfont=dict(size=12, weight='bold', color='#ffffff')
+            )
+            fig_h_pie.update_layout(
+                showlegend=True,
+                legend=dict(orientation="h", yanchor="bottom", y=-0.28, xanchor="center", x=0.5, font=dict(color=text_primary, size=10)),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                margin=dict(t=10, b=10, l=10, r=10),
+                annotations=[dict(text=f'<b>{tot_skus_plano}</b><br><span style="font-size:9px; color:{text_muted}">SKUs</span>', x=0.5, y=0.5, font_size=16, showarrow=False, font_color=text_primary)]
+            )
+            st.plotly_chart(fig_h_pie, use_container_width=True, config={'displayModeBar': False})
+            st.markdown('</div>', unsafe_allow_html=True)
             
-            st.plotly_chart(fig_h, use_container_width=True, config={'displayModeBar': False})
-            
-        with r2c2:
-            st.markdown(f"<h5 style='color: {text_secondary}; margin-bottom: 6px;'>Top 5 Categorías más afectadas por Quiebres</h5>", unsafe_allow_html=True)
-            if tot_quiebres > 0:
-                cat_q = quiebres_df['Categoría'].value_counts().reset_index().head(5)
-                cat_q.columns = ['Categoría', 'SKUs en Quiebre']
-                cat_q = cat_q.sort_values('SKUs en Quiebre', ascending=True)
-                
-                fig_q = px.bar(cat_q, x='SKUs en Quiebre', y='Categoría', orientation='h', text='SKUs en Quiebre',
-                               color_discrete_sequence=['#ef4444'])
-                fig_q.update_layout(xaxis_title="", yaxis_title="", showlegend=False, 
-                                    paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                                    xaxis=dict(showgrid=True, gridcolor=t["grid_color"], color=text_primary),
-                                    yaxis=dict(color=text_primary, tickfont=dict(weight='bold')),
-                                    margin=dict(t=10, b=10, l=10, r=10))
-                fig_q.update_traces(textposition='inside', textfont=dict(color='#ffffff', weight='bold'))
-                st.plotly_chart(fig_q, use_container_width=True, config={'displayModeBar': False})
-            else:
-                st.success("🎉 ¡Excelente! No se detectaron quiebres de inventario (Stock 0) en los productos del planograma.")
-    
+        # PLAN DE ACCIÓN INMEDIATO (MATRIZ GERENCIAL)
+        st.markdown(f"""
+            <div class="dash-card" style="margin-top: 4px;">
+                <div class="dash-card-header">
+                    <span class="dash-card-title">📌 Plan de Acción y Foco Operativo Inmediato</span>
+                    <span style="font-size: 0.70rem; font-weight: 800; color: {text_secondary};">PRIORIDADES DEL TURNO</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; padding-top: 4px; font-size: 0.82rem;">
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+                        <b style="color: #ef4444;">1. Urgencia de Reposición (Top Quiebres):</b><br>
+                        Priorizar el reabastecimiento en bodega de las categorías con mayor participación de venta que concentran quiebres para evitar fugas de ingresos inmediatas.
+                    </div>
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+                        <b style="color: #64748b;">2. Limpieza de Góndola (Bloqueados):</b><br>
+                        Retirar físicamente de la repisa los <b>{tot_bloqueados} SKUs en Estado B</b> para evitar contaminación visual y recuperar caras para productos de alta rotación.
+                    </div>
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+                        <b style="color: #d97706;">3. Formalización de Surtido Huérfano:</b><br>
+                        Identificar la ubicación real en tienda de los <b>{tot_no_plano} SKUs sin planograma</b> e incorporarlos al plano oficial con sus respectivos flejes de precio.
+                    </div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
     # =========================================================================
-    # --- PESTAÑA 1: VISTA INTERACTIVA DEL PASILLO (EN PALETA CLARA) ---
+    # --- PESTAÑA 1: VISTA INTERACTIVA DEL PASILLO ---
     # =========================================================================
     with tab1:
         col_view1, col_view2 = st.columns([1.5, 2])
@@ -2104,7 +2247,7 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
         components.html(html_pasillo, height=altura_dinamica, scrolling=True)
             
     # =========================================================================
-    # --- PESTAÑA 2: DASHBOARD ANALÍTICO (CON SKU COUNT EN FAIR SHARE) ---
+    # --- PESTAÑA 2: DASHBOARD ANALÍTICO ---
     # =========================================================================
     with tab2:
         if "dash_orden" not in st.session_state:
@@ -2473,7 +2616,7 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
                 insidetextanchor='middle',
                 textfont=dict(color='#ffffff', size=10, family='Inter', weight='bold'),
                 marker=dict(color='#d97706', line=dict(color='#b45309', width=1)),
-                hovertemplate="<b>%{x}</b><br>% Margen: %{text}<br>Margen S/: %{customdata[0]:,.2f}<br>SKUs Únicos Activos: %{customdata[1]}<extra></extra>",
+                hovertemplate="<b>%{x}</b><br>% Margen: %{text}<br>Margen S/: %{customdata[0]:,.2f}<extra></extra>",
                 customdata=df_fs[['Margen_Total', 'SKUs_Activos']]
             ))
             
