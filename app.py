@@ -14,95 +14,51 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- GESTIÓN DE TEMA GLOBAL (LIGHT / DARK) ---
-if "tema_actual" not in st.session_state:
-    st.session_state.tema_actual = "dark"
-
-es_oscuro = st.session_state.tema_actual == "dark"
-
-# --- PALETA DESIGN SYSTEM UNIFICADA ---
-theme_vars = {
-    "dark": {
-        "bg_app": "#070d19",
-        "bg_surface": "#0f172a",
-        "bg_card": "#111c30",
-        "border": "#1e3a8a",
-        "border_subtle": "#1e293b",
-        "text_primary": "#ffffff",
-        "text_secondary": "#93c5fd",
-        "text_muted": "#94a3b8",
-        "accent": "#3b82f6",
-        "accent_green": "#10b981",
-        "accent_purple": "#8b5cf6",
-        "accent_amber": "#fbbf24",
-        "grid_color": "rgba(255, 255, 255, 0.08)",
-        "card_shadow": "0 4px 10px rgba(0,0,0,0.4)",
-        "plotly_text": "#cbd5e1",
-        "input_bg": "#111c30",
-        "input_border": "#1e3a8a",
-        "input_text": "#ffffff",
-        "popover_bg": "#111c30",
-        "popover_border": "#1e3a8a",
-        "popover_text": "#ffffff",
-        "popover_hover": "#1e3a8a",
-        "popover_hover_text": "#60a5fa",
-        "btn_bg": "#111c30",
-        "btn_text": "#ffffff",
-        "tab_container_bg": "#0f172a",
-        "tab_inactive_bg": "#111c30",
-        "tab_inactive_text": "#cbd5e1",
-        "tab_inactive_border": "#1e293b",
-        "insight_green_bg": "rgba(16, 185, 129, 0.12)",
-        "insight_green_text": "#6ee7b7",
-        "insight_amber_bg": "rgba(245, 158, 11, 0.12)",
-        "insight_amber_text": "#fde047",
-        "insight_blue_bg": "rgba(59, 130, 246, 0.12)",
-        "insight_blue_text": "#93c5fd",
-    },
-    "light": {
-        "bg_app": "#f8fafc",
-        "bg_surface": "#ffffff",
-        "bg_card": "#ffffff",
-        "border": "#2563eb",
-        "border_subtle": "#cbd5e1",
-        "text_primary": "#0f172a",
-        "text_secondary": "#2563eb",
-        "text_muted": "#475569",
-        "accent": "#2563eb",
-        "accent_green": "#059669",
-        "accent_purple": "#7c3aed",
-        "accent_amber": "#d97706",
-        "grid_color": "rgba(0, 0, 0, 0.06)",
-        "card_shadow": "0 2px 6px rgba(0,0,0,0.05)",
-        "plotly_text": "#0f172a",
-        "input_bg": "#ffffff",
-        "input_border": "#cbd5e1",
-        "input_text": "#0f172a",
-        "popover_bg": "#ffffff",
-        "popover_border": "#cbd5e1",
-        "popover_text": "#0f172a",
-        "popover_hover": "#eff6ff",
-        "popover_hover_text": "#2563eb",
-        "btn_bg": "#ffffff",
-        "btn_text": "#0f172a",
-        "tab_container_bg": "#f1f5f9",
-        "tab_inactive_bg": "#e2e8f0",
-        "tab_inactive_text": "#0f172a",
-        "tab_inactive_border": "#cbd5e1",
-        "insight_green_bg": "#dcfce7",
-        "insight_green_text": "#14532d",
-        "insight_amber_bg": "#fef3c7",
-        "insight_amber_text": "#78350f",
-        "insight_blue_bg": "#eff6ff",
-        "insight_blue_text": "#1e40af",
-    }
+# --- PALETA DESIGN SYSTEM (Fija para el iframe interactivo) ---
+es_oscuro = True
+t = {
+    "bg_app": "#070d19",
+    "bg_surface": "#0f172a",
+    "bg_card": "#111c30",
+    "border": "#1e3a8a",
+    "border_subtle": "#1e293b",
+    "text_primary": "#ffffff",
+    "text_secondary": "#93c5fd",
+    "text_muted": "#94a3b8",
+    "accent": "#3b82f6",
+    "accent_green": "#10b981",
+    "accent_purple": "#8b5cf6",
+    "accent_amber": "#fbbf24",
+    "grid_color": "rgba(255, 255, 255, 0.08)",
+    "card_shadow": "0 4px 10px rgba(0,0,0,0.4)",
+    "plotly_text": "#cbd5e1",
+    "input_bg": "#111c30",
+    "input_border": "#1e3a8a",
+    "input_text": "#ffffff",
+    "popover_bg": "#111c30",
+    "popover_border": "#1e3a8a",
+    "popover_text": "#ffffff",
+    "popover_hover": "#1e3a8a",
+    "popover_hover_text": "#60a5fa",
+    "btn_bg": "#111c30",
+    "btn_text": "#ffffff",
+    "tab_container_bg": "#0f172a",
+    "tab_inactive_bg": "#111c30",
+    "tab_inactive_text": "#cbd5e1",
+    "tab_inactive_border": "#1e293b",
+    "insight_green_bg": "rgba(16, 185, 129, 0.12)",
+    "insight_green_text": "#6ee7b7",
+    "insight_amber_bg": "rgba(245, 158, 11, 0.12)",
+    "insight_amber_text": "#fde047",
+    "insight_blue_bg": "rgba(59, 130, 246, 0.12)",
+    "insight_blue_text": "#93c5fd",
 }
-t = theme_vars[st.session_state.tema_actual]
+
 text_secondary = t["text_secondary"]
 text_primary = t["text_primary"]
 text_muted = t["text_muted"]
 
-# INYECCIÓN CSS CON MÁXIMO CONTRASTE
+# INYECCIÓN CSS CON MÁXIMO CONTRASTE (PARA ELEMENTOS STREAMLIT)
 st.markdown(f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -124,10 +80,10 @@ st.markdown(f"""
         }}
         
         .block-container {{
-            padding-left: 0.4rem !important;
-            padding-right: 0.4rem !important;
-            padding-top: 0.8rem !important;
-            padding-bottom: 1rem !important;
+            padding-left: 1.2rem !important;
+            padding-right: 1.2rem !important;
+            padding-top: 1rem !important;
+            padding-bottom: 1.5rem !important;
             max-width: 100% !important;
         }}
         
@@ -243,7 +199,7 @@ st.markdown(f"""
             cursor: pointer !important;
         }}
         
-        /* TARJETAS KPIS */
+        /* TARJETAS KPIS Y DASHBOARDS */
         .fin-kpi-container {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -303,41 +259,15 @@ st.markdown(f"""
             box-shadow: {t["card_shadow"]};
         }}
 
-        .dash-card-header {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid {t["border_subtle"]};
-        }}
-
-        .dash-card-title {{
-            font-size: 0.85rem;
-            font-weight: 800;
-            color: {text_primary};
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }}
-
         .chart-scroll-wrapper {{
             width: 100%;
             overflow-x: auto;
             overflow-y: hidden;
             padding-bottom: 8px;
         }}
-        .chart-scroll-wrapper::-webkit-scrollbar {{
-            height: 8px;
-        }}
-        .chart-scroll-wrapper::-webkit-scrollbar-track {{
-            background: {t["bg_app"]};
-            border-radius: 4px;
-        }}
-        .chart-scroll-wrapper::-webkit-scrollbar-thumb {{
-            background: {t["accent"]};
-            border-radius: 4px;
-        }}
+        .chart-scroll-wrapper::-webkit-scrollbar {{ height: 8px; }}
+        .chart-scroll-wrapper::-webkit-scrollbar-track {{ background: {t["bg_app"]}; border-radius: 4px; }}
+        .chart-scroll-wrapper::-webkit-scrollbar-thumb {{ background: {t["accent"]}; border-radius: 4px; }}
 
         .insight-box {{
             border-radius: 8px;
@@ -422,7 +352,7 @@ def obtener_alerta_css(estado, stock_val):
         else: return "alerta-ok", "Stock OK"
     else: return "alerta-desconocido", "Desconocido"
 
-# --- GENERADOR DEL PLANOGRAMA ---
+# --- GENERADOR DEL PASILLO INTERACTIVO ORIGINAL ---
 def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
     df = df.copy()
     df['FilaOriginal'] = range(len(df))
@@ -584,7 +514,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
 
                 html_cuerpos += f"""
                 <div class="bay-column" data-module="{cuerpo_num}">
-                  <div class="bay-title" title="Toca para cuadrar este cuerpo a todo el ancho">
+                  <div class="bay-title" title="Haz clic para ajustar a lo ancho">
                     <span class="bay-main-title">{cuerpo_nombre.upper()} 🔍</span>
                     {subtitulo_cat}
                   </div>
@@ -1072,7 +1002,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
         .shelf-bottom-rail {{ height: 4px; background: {t["border_subtle"]}; border-radius: 0 0 2px 2px; }}
         .shelf-info {{ background: {card_bg}; border-left: 3px solid #3b82f6; padding: 3px 8px; font-size: 0.65rem; font-weight: 700; display: flex; justify-content: space-between; color: {text_primary}; }}
         
-        /* MODAL DE DETALLE SEGURO */
+        /* MODAL DE DETALLE */
         .modal-overlay {{ 
           position: fixed !important; 
           inset: 0 !important; 
@@ -1303,6 +1233,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
         }}
 
+        // ENFOCA UN CUERPO Y LO IMANTA AL 100% DEL ANCHO DE LA PANTALLA
         function enfocarCuerpoIndividual(targetBayElem) {{
           const container = getActiveContainer();
           if (!container || !targetBayElem) return;
@@ -1320,6 +1251,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           setTimeout(updateScrollButtons, 350);
         }}
 
+        // REGRESA A LA VISTA DE MÚLTIPLES CUERPOS
         function regresarAVistaGeneral() {{
           const container = getActiveContainer();
           if (!container) return;
@@ -1335,6 +1267,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
 
         btnReturnAll.addEventListener('click', regresarAVistaGeneral);
 
+        // CLIC EN EL TÍTULO DE UN CUERPO PARA ENFOCARLO AL 100%
         document.querySelectorAll('.bay-title').forEach(titleElem => {{
           titleElem.addEventListener('click', (e) => {{
             const bayElem = titleElem.closest('.bay-column');
@@ -1361,6 +1294,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
               startY = e.touches[0].clientY - posY;
             }}
             const now = new Date().getTime();
+            // DOBLE TOQUE: ENFOCA EL CUERPO AL 100% O REGRESA A LA VISTA GENERAL
             if (now - lastTap < 320 && now - lastTap > 0) {{
               const clickedBay = e.target.closest('.bay-column');
               if (clickedBay && !isSingleMode) {{
@@ -1388,6 +1322,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
             const currentDist = getDistance(e.touches);
             const factor = currentDist / initialDist;
             
+            // GESTO PELLIZCO PARA ALEJAR (ZOOM OUT): REGRESA A LA VISTA MULTIPLE
             if (factor < 0.88 && isSingleMode) {{
               regresarAVistaGeneral();
               isTouching = false;
@@ -1413,6 +1348,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           }});
         }}
 
+        // NAVEGACIÓN IMANTADA ENTRE CUERPOS
         btnPrev.addEventListener('click', () => {{
           const container = getActiveContainer();
           if (!container) return;
@@ -1611,6 +1547,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           document.getElementById('t-cob').textContent = setCob.size;
           document.getElementById('t-top').textContent = setTop.size;
 
+          // FILTRADO ESTRICTO DE CUERPOS: SE OCULTAN CUERPOS SIN PRODUCTOS COINCIDENTES
           const activeContainer = getActiveContainer();
           if (activeContainer) {{
             activeContainer.querySelectorAll('.bay-column').forEach(bay => {{
@@ -1690,7 +1627,20 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
         const closeBtn = document.querySelector('.modal-close');
         
         document.querySelectorAll('.sku-item').forEach(card => {{
-            card.addEventListener('click', () => {{
+            card.addEventListener('click', (e) => {{
+                e.stopPropagation();
+                
+                const fotoUrl = card.getAttribute('data-foto') || '';
+                if (fotoUrl && fotoUrl.trim() !== '') {{
+                    modalImg.src = fotoUrl;
+                    modalImg.style.display = 'block';
+                    modalPlaceholder.style.display = 'none';
+                }} else {{
+                    modalImg.src = '';
+                    modalImg.style.display = 'none';
+                    modalPlaceholder.style.display = 'flex';
+                }}
+                
                 document.getElementById('m-name').textContent = card.getAttribute('data-name');
                 document.getElementById('m-cod').textContent = card.getAttribute('data-cod');
                 document.getElementById('m-ean').textContent = card.getAttribute('data-ean');
@@ -1710,12 +1660,28 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
                 document.getElementById('m-top').textContent = isTop ? '⭐ SÍ (Top Ventas)' : 'NO';
                 
                 modal.classList.add('active');
+                document.body.classList.add('modal-active');
             }});
         }});
-        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-        window.addEventListener('click', (e) => {{ if(e.target === modal) modal.classList.remove('active'); }});
+        
+        function closeModal() {{
+            modal.classList.remove('active');
+            document.body.classList.remove('modal-active');
+        }}
+
+        closeBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => {{ if(e.target === modal) closeModal(); }});
+
+        document.addEventListener('keydown', (e) => {{
+            if (e.key === 'Escape' && modal.classList.contains('active')) {{
+                closeModal();
+            }}
+        }});
 
         setTimeout(() => {{
+          brandSelect.value = 'ALL';
+          catSelect.value = 'ALL';
+          fsCatSelect.value = 'ALL';
           applyFilters();
         }}, 100);
       </script>
@@ -1723,7 +1689,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
     </html>
     """
 
-# --- CARGA INTEGRADA DE FUENTES Y CRUCE CON URL DE JERARQUÍA OFICIAL ---
+# --- CARGA INTEGRADA DE FUENTES Y CRUCE EXACTO REQUERIDO ---
 @st.cache_data(ttl=14400)
 def cargar_todas_las_fuentes():
     try:
@@ -1803,7 +1769,7 @@ def cargar_todas_las_fuentes():
             df_cob['Cobertura'] = df_cob_raw[col_cob].apply(safe_float) if col_cob else -999.0
             df_cob = df_cob[df_cob['Material_Str'] != ""].drop_duplicates(subset=['Material_Str'])
 
-        # 3. Ventas y Margen
+        # 3. Ventas y Margen (factVentas) - LIMPIEZA: SIN GUIONES "-"
         df_vta_raw = leer_tabla_por_ancla(url_ventas, "Material", sheet_target=0, skiprows_fallback=2)
         df_vta_raw = df_vta_raw.loc[:, ~df_vta_raw.columns.duplicated()].copy()
         
@@ -1811,6 +1777,8 @@ def cargar_todas_las_fuentes():
         col_mat_vta = 'Material' if 'Material' in df_vta_raw.columns else ('COD REAL' if 'COD REAL' in df_vta_raw.columns else None)
         if col_mat_vta:
             df_vta['Material_Str'] = df_vta_raw[col_mat_vta].astype(str).apply(clean_sku)
+            df_vta = df_vta[~df_vta['Material_Str'].str.contains('-', na=False)].copy()
+
             col_v = 'Monto Venta Neta' if 'Monto Venta Neta' in df_vta_raw.columns else 'Venta'
             col_m = 'Monto Margen' if 'Monto Margen' in df_vta_raw.columns else 'Margen'
             col_p = '% PART' if '% PART' in df_vta_raw.columns else '% Part'
@@ -1820,7 +1788,7 @@ def cargar_todas_las_fuentes():
             df_vta['% Part'] = df_vta_raw[col_p].apply(safe_float) if col_p in df_vta_raw.columns else -999.0
             df_vta = df_vta[df_vta['Material_Str'] != ""].drop_duplicates(subset=['Material_Str'])
 
-        # 4. Código de Barras
+        # 4. Código de Barras (dimCodbarras)
         df_bar_raw = leer_tabla_por_ancla(url_barras, "Material", sheet_target=0, skiprows_fallback=2)
         df_bar_raw = df_bar_raw.loc[:, ~df_bar_raw.columns.duplicated()].copy()
         
@@ -1889,6 +1857,7 @@ def cargar_todas_las_fuentes():
 
         if not df_bar.empty:
             df_pasillo_base = df_pasillo_base.merge(df_bar[['Material_Str', 'EAN_Master', 'G.A.']], left_on='COD_REAL_Str', right_on='Material_Str', how='left')
+            df_pasillo_base.rename(columns={'EAN_Master': 'EAN'}, inplace=True)
             df_pasillo_base.drop(columns=['Material_Str'], inplace=True, errors='ignore')
 
         if not df_fotos.empty:
@@ -1964,7 +1933,7 @@ def cargar_todas_las_fuentes():
             df_sku_unico.drop(columns=['Material_Str'], inplace=True, errors='ignore')
 
         if not df_cob.empty:
-            df_sku_unico = df_sku_unico.merge(df_cob[['Material_Str', 'Stock', 'Cobertura']], left_on='Material_Unico', right_on='Material_Str', how='left')
+            df_sku_unico = df_sku_unico.merge(df_cob[['Material_Str', 'Estado', 'Stock', 'Cobertura']], left_on='Material_Unico', right_on='Material_Str', how='left')
             df_sku_unico.drop(columns=['Material_Str'], inplace=True, errors='ignore')
 
         if 'G.A.' in df_sku_unico.columns:
@@ -1992,7 +1961,7 @@ def cargar_todas_las_fuentes():
         for col, val_def in [('Stock', -999.0), ('Cobertura', -999.0), ('Venta', -999.0), ('Monto Margen', -999.0)]:
             df_sku_unico[col] = df_sku_unico[col].fillna(val_def) if col in df_sku_unico.columns else val_def
 
-        for col, val_def in [('Descripción', 'SIN DATOS'), ('EAN', 'SIN DATOS'), ('Departamento', 'SIN DATOS'), ('Sección', 'SIN DATOS'), ('Categoría', 'SIN DATOS'), ('Grupo de Artículo', 'SIN DATOS'), ('Ubicación(es)', pd.NA)]:
+        for col, val_def in [('Estado', 'SIN DATOS'), ('Descripción', 'SIN DATOS'), ('EAN', 'SIN DATOS'), ('Departamento', 'SIN DATOS'), ('Sección', 'SIN DATOS'), ('Categoría', 'SIN DATOS'), ('Grupo de Artículo', 'SIN DATOS'), ('Ubicación(es)', pd.NA)]:
             df_sku_unico[col] = df_sku_unico[col].fillna(val_def).astype(str).str.strip() if col in df_sku_unico.columns else val_def
 
         hora_lectura = pd.Timestamp.now('America/Lima').strftime("%d/%m/%Y - %I:%M %p")
@@ -2000,8 +1969,8 @@ def cargar_todas_las_fuentes():
     except Exception as e:
         return None, None, None, str(e)
 
-# --- HEADER SAAS UNIFICADO CON CRÉDITO DE AUTORÍA ---
-col_head1, col_head2, col_head3 = st.columns([5.5, 2, 2.5])
+# --- HEADER SAAS UNIFICADO ---
+col_head1, col_head3 = st.columns([7.5, 2.5])
 
 with col_head1:
     st.markdown(f"""
@@ -2013,12 +1982,6 @@ with col_head1:
         </div>
     """, unsafe_allow_html=True)
     
-with col_head2:
-    modo_btn_label = "☀️ Modo Claro" if es_oscuro else "🌙 Modo Oscuro"
-    if st.button(modo_btn_label, use_container_width=True):
-        st.session_state.tema_actual = "light" if es_oscuro else "dark"
-        st.rerun()
-
 with col_head3:
     col_act, col_time = st.columns([1, 2])
     with col_act:
@@ -2029,7 +1992,7 @@ with col_head3:
         header_time_placeholder = st.empty()
 
 with st.spinner("Sincronizando fuentes externas en la nube..."):
-    df_nube, df_sku_unico_global, info_hora, error_nube = cargar_todas_las_fuentes()
+    df_pasillo_global, df_sku_unico_global, info_hora, error_nube = cargar_todas_las_fuentes()
 
 header_time_placeholder.markdown(f"""
     <div style="text-align: right; line-height: 1.3;">
@@ -2038,12 +2001,11 @@ header_time_placeholder.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-df_raw = df_nube
 if error_nube:
     st.warning(f"⚠️ Aviso de conexión a la nube: {error_nube}")
 
-if df_raw is not None and not df_raw.empty:
-    df_base = df_raw.copy()
+if df_pasillo_global is not None and not df_pasillo_global.empty:
+    df_base = df_pasillo_global.copy()
     
     df_base['Venta_Num'] = df_base['Venta'].apply(lambda x: 0.0 if safe_float(x, -999.0) == -999.0 else safe_float(x, 0.0))
     df_base['Margen_Num'] = df_base['Monto Margen'].apply(lambda x: 0.0 if safe_float(x, -999.0) == -999.0 else safe_float(x, 0.0))
@@ -2055,15 +2017,90 @@ if df_raw is not None and not df_raw.empty:
     col_unid_bandeja = 'Total Unid en Bandeja' if 'Total Unid en Bandeja' in df_base.columns else ('Total_Unidades' if 'Total_Unidades' in df_base.columns else 'Stock')
     df_base['Unid_Bandeja_Num'] = df_base[col_unid_bandeja].apply(lambda x: 0.0 if safe_float(x, -999.0) == -999.0 else safe_float(x, 0.0))
     
+    # Preparar df_unicos para el dashboard y la radiografía
     df_unicos = df_base.drop_duplicates(subset=['COD REAL']).copy()
     df_unicos = df_unicos[df_unicos['COD REAL'].astype(str).str.strip() != ""]
     
-    tab1, tab2, tab3 = st.tabs([
+    tab_resumen, tab1, tab2, tab3 = st.tabs([
+        "📊 Resumen Ejecutivo",
         "🛒 Vista Interactiva del Pasillo", 
-        "📊 Dashboard Analítico Financiero", 
+        "📈 Dashboard Analítico Financiero", 
         "⚠️ Errores y Desajustes de Cruce"
     ])
     
+    # =========================================================================
+    # --- NUEVA PESTAÑA 0: RESUMEN EJECUTIVO (RADIOGRAFÍA DE LA TIENDA) ---
+    # =========================================================================
+    with tab_resumen:
+        st.markdown(f"<h3 style='color: {text_primary}; margin-top:0;'>Radiografía Operativa y Comercial de la Tienda</h3>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: {text_muted}; font-size:0.9rem;'>Visión global del estado del inventario y rentabilidad cruzada en piso.</p>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Cálculos ejecutivos globales
+        tot_skus = len(df_unicos)
+        quiebres_df = df_unicos[(df_unicos['Estado'].str.strip().str.upper() == 'A') & (df_unicos['Stock_Num'] <= 0)]
+        tot_quiebres = len(quiebres_df)
+        pct_quiebres = (tot_quiebres / tot_skus) * 100 if tot_skus > 0 else 0
+        
+        ventas_tot_plano = df_unicos['Venta_Num'].sum()
+        margen_tot_plano = df_unicos['Margen_Num'].sum()
+        margen_pct_plano = (margen_tot_plano / ventas_tot_plano * 100) if ventas_tot_plano > 0 else 0
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("SKUs en Planograma", f"{tot_skus}")
+        c2.metric("Nivel de Quiebres (OOS)", f"{tot_quiebres} SKUs", f"{pct_quiebres:.1f}% del surtido", delta_color="inverse")
+        c3.metric("Ventas Totales", f"S/ {ventas_tot_plano:,.0f}")
+        c4.metric("Rentabilidad (Margen %)", f"{margen_pct_plano:.1f}%", f"S/ {margen_tot_plano:,.0f} Bruto")
+        
+        st.markdown("<hr style='border-color: #1e293b;'>", unsafe_allow_html=True)
+        
+        r2c1, r2c2 = st.columns([4, 6])
+        
+        with r2c1:
+            st.markdown(f"<h5 style='color: {text_secondary};'>Salud del Inventario en Piso</h5>", unsafe_allow_html=True)
+            
+            def get_health(row):
+                if str(row['Estado']).strip().upper() == 'B': return 'Bloqueado'
+                elif row['Stock_Num'] <= 0: return 'Quiebre (Stock 0)'
+                elif row['Stock_Num'] <= 5: return 'Alerta Baja (1 a 5)'
+                else: return 'Stock OK (>5)'
+            
+            df_unicos['Salud_Inv'] = df_unicos.apply(get_health, axis=1)
+            health_counts = df_unicos['Salud_Inv'].value_counts().reset_index()
+            health_counts.columns = ['Estado de Stock', 'Cantidad']
+            
+            color_map = {'Stock OK (>5)': '#10b981', 'Alerta Baja (1 a 5)': '#f59e0b', 'Quiebre (Stock 0)': '#ef4444', 'Bloqueado': '#475569'}
+            
+            fig_h = px.pie(health_counts, values='Cantidad', names='Estado de Stock', hole=0.55, 
+                           color='Estado de Stock', color_discrete_map=color_map)
+            fig_h.update_traces(textinfo='percent', textposition='inside', insidetextorientation='horizontal', textfont=dict(size=12, weight='bold', color='#ffffff'))
+            fig_h.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5, font=dict(color=text_primary)),
+                                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=10, b=10, l=10, r=10))
+            
+            st.plotly_chart(fig_h, use_container_width=True, config={'displayModeBar': False})
+            
+        with r2c2:
+            st.markdown(f"<h5 style='color: {text_secondary};'>Top 5 Categorías con más Quiebres</h5>", unsafe_allow_html=True)
+            if tot_quiebres > 0:
+                cat_q = quiebres_df['Categoría'].value_counts().reset_index().head(5)
+                cat_q.columns = ['Categoría', 'SKUs en Quiebre']
+                cat_q = cat_q.sort_values('SKUs en Quiebre', ascending=True)
+                
+                fig_q = px.bar(cat_q, x='SKUs en Quiebre', y='Categoría', orientation='h', text='SKUs en Quiebre',
+                               color_discrete_sequence=['#ef4444'])
+                fig_q.update_layout(xaxis_title="", yaxis_title="", showlegend=False, 
+                                    paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+                                    xaxis=dict(showgrid=True, gridcolor=t["grid_color"], color=text_primary),
+                                    yaxis=dict(color=text_primary, tickfont=dict(weight='bold')),
+                                    margin=dict(t=10, b=10, l=10, r=10))
+                fig_q.update_traces(textposition='inside', textfont=dict(color='#ffffff', weight='bold'))
+                st.plotly_chart(fig_q, use_container_width=True, config={'displayModeBar': False})
+            else:
+                st.success("🎉 ¡No se detectaron quiebres de inventario (Stock 0) en los productos activos!")
+    
+    # =========================================================================
+    # --- PESTAÑA 1: VISTA INTERACTIVA DEL PASILLO ---
+    # =========================================================================
     with tab1:
         col_view1, col_view2 = st.columns([1.5, 2])
         with col_view1:
@@ -2076,14 +2113,14 @@ if df_raw is not None and not df_raw.empty:
             )
             es_realograma = ("Realograma" in modo_vista)
         with col_view2:
-            st.markdown(f"<div style='text-align: right; font-size: 0.80rem; color: {text_muted}; margin-top: 5px;'>👆 <i>Toca el título de un cuerpo para enfocarlo al 100% de la pantalla.</i></div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align: right; font-size: 0.80rem; color: {text_muted}; margin-top: 5px;'>👆 <i>Pellizca para Zoom o haz <b>doble toque</b> para auto-encajar el cuerpo.</i></div>", unsafe_allow_html=True)
             
         bandeja_series = df_base.get('Bandeja', pd.Series(["1.1"]*len(df_base))).astype(str)
         niveles_extraidos = bandeja_series.str.extract(r'(\d+)\.(\d+)')[1]
         max_niveles_count = int(pd.to_numeric(niveles_extraidos, errors='coerce').fillna(6).max())
         altura_dinamica = max(950, 240 + max_niveles_count * 140)
 
-        html_pasillo = generar_html_pasillo_interactivo(df_base, es_realograma=es_realograma, es_oscuro=es_oscuro)
+        html_pasillo = generar_html_pasillo_interactivo(df_base, es_realograma=es_realograma, es_oscuro=True)
         components.html(html_pasillo, height=altura_dinamica, scrolling=True)
             
     # =========================================================================
@@ -2141,7 +2178,6 @@ if df_raw is not None and not df_raw.empty:
         margen_pct_global = (margen_global / ventas_plano) if ventas_plano > 0 else 0
         skus_plano = len(df_dash_unicos)
 
-        # 2. Total General de Ventas y SKUs (desde factVentas sin restricción de plano)
         df_vta_global_valid = df_sku_unico_global[df_sku_unico_global['Venta'] != -999.0].copy()
         if not df_vta_global_valid.empty:
             total_venta_maestra = df_vta_global_valid['Venta'].apply(lambda x: 0.0 if safe_float(x, -999.0) == -999.0 else safe_float(x, 0.0)).sum()
@@ -2231,7 +2267,6 @@ if df_raw is not None and not df_raw.empty:
             ).reset_index()
 
             if not ventas_cuerpo.empty:
-                # ETIQUETA EN DOS LÍNEAS COMBINADA
                 ventas_cuerpo['Cuerpo_Label_Combined'] = [
                     f"P{row['Pasillo_Key']} [{row['Lateral_Key']}]<br><b>C{int(row['Cuerpo_Num'])}</b>" 
                     for _, row in ventas_cuerpo.iterrows()
@@ -2401,7 +2436,8 @@ if df_raw is not None and not df_raw.empty:
         df_unicos_cat = df_dash_base.drop_duplicates(subset=['COD REAL', dim_fs]).copy()
         df_fin_cat = df_unicos_cat.groupby(dim_fs).agg(
             Ventas_Total=('Venta_Num', 'sum'),
-            Margen_Total=('Margen_Num', 'sum')
+            Margen_Total=('Margen_Num', 'sum'),
+            SKUs_Activos=('COD REAL', 'count')
         ).reset_index()
 
         df_fs = pd.merge(df_espacio_cat, df_fin_cat, on=dim_fs, how='outer').fillna(0)
@@ -2431,8 +2467,8 @@ if df_raw is not None and not df_raw.empty:
                 insidetextanchor='middle',
                 textfont=dict(color='#ffffff', size=10, family='Inter', weight='bold'),
                 marker=dict(color='#2563eb', line=dict(color='#1d4ed8', width=1)),
-                hovertemplate="<b>%{x}</b><br>% Espacio: %{y:.1%}<br>Total Físico: %{customdata:,.0f}<extra></extra>",
-                customdata=df_fs['Espacio_Total']
+                hovertemplate="<b>%{x}</b><br>% Espacio: %{y:.1%}<br>Total Físico: %{customdata[0]:,.0f}<br>SKUs Únicos Activos: %{customdata[1]}<extra></extra>",
+                customdata=df_fs[['Espacio_Total', 'SKUs_Activos']]
             ))
             
             fig_fs.add_trace(go.Bar(
@@ -2444,8 +2480,8 @@ if df_raw is not None and not df_raw.empty:
                 insidetextanchor='middle',
                 textfont=dict(color='#ffffff', size=10, family='Inter', weight='bold'),
                 marker=dict(color='#059669', line=dict(color='#047857', width=1)),
-                hovertemplate="<b>%{x}</b><br>% Ventas: %{y:.1%}<br>Ventas S/: %{customdata:,.2f}<extra></extra>",
-                customdata=df_fs['Ventas_Total']
+                hovertemplate="<b>%{x}</b><br>% Ventas: %{y:.1%}<br>Ventas S/: %{customdata[0]:,.2f}<br>SKUs Únicos Activos: %{customdata[1]}<extra></extra>",
+                customdata=df_fs[['Ventas_Total', 'SKUs_Activos']]
             ))
 
             fig_fs.add_trace(go.Bar(
@@ -2457,8 +2493,8 @@ if df_raw is not None and not df_raw.empty:
                 insidetextanchor='middle',
                 textfont=dict(color='#ffffff', size=10, family='Inter', weight='bold'),
                 marker=dict(color='#d97706', line=dict(color='#b45309', width=1)),
-                hovertemplate="<b>%{x}</b><br>% Margen: %{text}<br>Margen S/: %{customdata:,.2f}<extra></extra>",
-                customdata=df_fs['Margen_Total']
+                hovertemplate="<b>%{x}</b><br>% Margen: %{text}<br>Margen S/: %{customdata[0]:,.2f}<br>SKUs Únicos Activos: %{customdata[1]}<extra></extra>",
+                customdata=df_fs[['Margen_Total', 'SKUs_Activos']]
             ))
             
             fig_fs.update_layout(
@@ -2473,7 +2509,7 @@ if df_raw is not None and not df_raw.empty:
             )
             
             fig_fs.update_xaxes(fixedrange=True)
-            fig_fs.update_yaxes(fixedrange=True)
+            fig.update_yaxes(fixedrange=True)
             st.plotly_chart(fig_fs, use_container_width=True, config={'displayModeBar': False})
             
             subdimensionados = df_fs[(df_fs['Brecha_Share'] > 0.03) | (df_fs['Brecha_Margen'] > 0.03)]
@@ -2512,7 +2548,7 @@ if df_raw is not None and not df_raw.empty:
             
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # --- NIVEL 4: REPORTE OPERATIVO DETALLADO ---
+        # --- NIVEL 4: REPORTE OPERATIVO DETALLADO (CON EL NUEVO FILTRO) ---
         st.markdown(f"""
             <div class="dash-card">
                 <div class="dash-card-header">
@@ -2547,11 +2583,10 @@ if df_raw is not None and not df_raw.empty:
             elif filtro_reporte == "No está en el planograma":
                 df_rep = df_rep[df_rep['Ubicación(es)'].isna() | (df_rep['Ubicación(es)'].astype(str).str.strip() == "") | (df_rep['Ubicación(es)'].astype(str).str.strip() == "SIN DATOS")]
                 
-            col_desc = 'Descripción' if 'Descripción' in df_rep.columns else 'Nombre'
             cols_to_show = [
-                'COD REAL', 'EAN', col_desc, 'Ubicación(es)', 
+                'COD REAL', 'EAN', 'Descripción', 'Estado', 'Ubicación(es)', 
                 'Departamento', 'Sección', 'Categoría', 'Grupo de Artículo', 
-                'Marca', 'Stock', 'Cobertura', 'Venta', 'Monto Margen'
+                'Stock', 'Cobertura', 'Venta', 'Monto Margen'
             ]
             cols_to_show = [c for c in cols_to_show if c in df_rep.columns]
 
