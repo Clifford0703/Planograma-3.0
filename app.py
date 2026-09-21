@@ -320,6 +320,15 @@ def clean_sku(val):
         s = str(int(s))
     return s.strip()
 
+def get_clean_series(df, col_name):
+    """Extrae de forma segura una sola Series de texto, garantizando que no sea DataFrame."""
+    if col_name not in df.columns:
+        return pd.Series([""] * len(df), index=df.index, dtype=str)
+    item = df[col_name]
+    if isinstance(item, pd.DataFrame):
+        item = item.iloc[:, 0]
+    return item.astype(str)
+
 # PALETA PASTEL EXACTA PARA MODO CLARO
 def obtener_estado_y_color(estado, stock_val, dark=False):
     estado = str(estado).strip().upper()
@@ -381,10 +390,10 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
     pasillo_col = 'PASILLO' if 'PASILLO' in df.columns else ('Pasillo' if 'Pasillo' in df.columns else None)
     lateral_col = 'LATERAL' if 'LATERAL' in df.columns else ('Lateral' if 'Lateral' in df.columns else None)
     
-    df['Pasillo_Val'] = df[pasillo_col].astype(str).str.strip().str.upper() if pasillo_col else "1"
-    df['Lateral_Val'] = df[lateral_col].astype(str).str.strip().str.upper() if lateral_col else "A"
+    df['Pasillo_Val'] = get_clean_series(df, pasillo_col).str.strip().str.upper() if pasillo_col else "1"
+    df['Lateral_Val'] = get_clean_series(df, lateral_col).str.strip().str.upper() if lateral_col else "A"
 
-    bandeja_str = df.get('Bandeja', pd.Series(["1.1"]*len(df))).astype(str)
+    bandeja_str = get_clean_series(df, 'Bandeja').replace('', '1.1')
     df[['Cuerpo_Ord', 'Nivel_Ord']] = bandeja_str.str.extract(r'(\d+)\.(\d+)')[0:2]
     df['Cuerpo_Ord'] = pd.to_numeric(df['Cuerpo_Ord'], errors='coerce').fillna(1)
     df['Nivel_Num'] = pd.to_numeric(df['Nivel_Ord'], errors='coerce').fillna(1)
@@ -777,7 +786,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
           backdrop-filter: blur(12px); 
           flex-direction: column;
           gap: 8px; 
-          box-sizing: border-box;
+          box-sizing: border-box; 
           flex-shrink: 0 !important;
         }}
 
@@ -1606,9 +1615,24 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
         // MODAL DE DETALLE
         const modal = document.getElementById('productModal');
         const closeBtn = document.querySelector('.modal-close');
+        const modalImg = document.getElementById('m-img');
+        const modalPlaceholder = document.getElementById('m-placeholder');
         
         document.querySelectorAll('.sku-item').forEach(card => {{
-            card.addEventListener('click', () => {{
+            card.addEventListener('click', (e) => {{
+                e.stopPropagation();
+                
+                const fotoUrl = card.getAttribute('data-foto') || '';
+                if (fotoUrl && fotoUrl.trim() !== '') {{
+                    modalImg.src = fotoUrl;
+                    modalImg.style.display = 'block';
+                    modalPlaceholder.style.display = 'none';
+                }} else {{
+                    modalImg.src = '';
+                    modalImg.style.display = 'none';
+                    modalPlaceholder.style.display = 'flex';
+                }}
+                
                 document.getElementById('m-name').textContent = card.getAttribute('data-name');
                 document.getElementById('m-cod').textContent = card.getAttribute('data-cod');
                 document.getElementById('m-ean').textContent = card.getAttribute('data-ean');
@@ -1628,12 +1652,28 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
                 document.getElementById('m-top').textContent = isTop ? '⭐ SÍ (Top Ventas)' : 'NO';
                 
                 modal.classList.add('active');
+                document.body.classList.add('modal-active');
             }});
         }});
-        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-        window.addEventListener('click', (e) => {{ if(e.target === modal) modal.classList.remove('active'); }});
+        
+        function closeModal() {{
+            modal.classList.remove('active');
+            document.body.classList.remove('modal-active');
+        }}
+
+        closeBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => {{ if(e.target === modal) closeModal(); }});
+
+        document.addEventListener('keydown', (e) => {{
+            if (e.key === 'Escape' && modal.classList.contains('active')) {{
+                closeModal();
+            }}
+        }});
 
         setTimeout(() => {{
+          brandSelect.value = 'ALL';
+          catSelect.value = 'ALL';
+          fsCatSelect.value = 'ALL';
           applyFilters();
         }}, 100);
       </script>
@@ -1669,24 +1709,24 @@ def cargar_todas_las_fuentes():
                     df = pd.read_excel(url, sheet_name=sheet_target, skiprows=header_idx)
                 except Exception:
                     df = pd.read_excel(url, sheet_name=0, skiprows=header_idx)
+                
                 df.columns = [str(c).strip() for c in df.columns]
+                df = df.loc[:, ~df.columns.duplicated()].copy()
                 return df
             except Exception:
                 df = pd.read_excel(url, sheet_name=0, skiprows=skiprows_fallback)
                 df.columns = [str(c).strip() for c in df.columns]
+                df = df.loc[:, ~df.columns.duplicated()].copy()
                 return df
 
         # 1. Matriz de Planos (DATOST -> COD REAL)
         df_matriz = leer_tabla_por_ancla(url_planos, "COD REAL", sheet_target=0, skiprows_fallback=3)
-        df_matriz = df_matriz.loc[:, ~df_matriz.columns.duplicated()].copy()
-        
         if "COD REAL" not in df_matriz.columns:
             df_matriz = pd.read_excel(url_planos, sheet_name=0, skiprows=2)
             df_matriz.columns = [str(c).strip() for c in df_matriz.columns]
             df_matriz = df_matriz.loc[:, ~df_matriz.columns.duplicated()].copy()
 
-        df_matriz.columns = [str(c).strip() for c in df_matriz.columns]
-        df_matriz['COD_REAL_Str'] = df_matriz['COD REAL'].astype(str).apply(clean_sku)
+        df_matriz['COD_REAL_Str'] = get_clean_series(df_matriz, 'COD REAL').apply(clean_sku)
         df_matriz['COD REAL'] = df_matriz['COD_REAL_Str']
 
         if 'PASILLO' not in df_matriz.columns:
@@ -1696,8 +1736,6 @@ def cargar_todas_las_fuentes():
 
         # 2. Coberturas y Stock
         df_cob_raw = leer_tabla_por_ancla(url_coberturas, "Material", sheet_target=0, skiprows_fallback=3)
-        df_cob_raw = df_cob_raw.loc[:, ~df_cob_raw.columns.duplicated()].copy()
-        
         if "Material" not in df_cob_raw.columns:
             df_cob_raw = pd.read_excel(url_coberturas, sheet_name=0, skiprows=3)
             df_cob_raw.columns = [str(c).strip() for c in df_cob_raw.columns]
@@ -1705,7 +1743,7 @@ def cargar_todas_las_fuentes():
 
         df_cob = pd.DataFrame()
         if "Material" in df_cob_raw.columns:
-            df_cob['Material_Str'] = df_cob_raw['Material'].astype(str).apply(clean_sku)
+            df_cob['Material_Str'] = get_clean_series(df_cob_raw, 'Material').apply(clean_sku)
             cols_map = {str(c).strip().lower(): c for c in df_cob_raw.columns}
             col_est = cols_map.get('estado material', cols_map.get('estado', None))
             col_stk = cols_map.get('stock actual', cols_map.get('stock', None))
@@ -1716,58 +1754,58 @@ def cargar_todas_las_fuentes():
                     col_cob = original_name
                     break
 
-            df_cob['Estado'] = df_cob_raw[col_est].astype(str).str.extract(r'([ABab])')[0].str.upper().fillna('A') if col_est else 'A'
-            df_cob['Stock'] = df_cob_raw[col_stk].apply(safe_float) if col_stk else -999.0
-            df_cob['Cobertura'] = df_cob_raw[col_cob].apply(safe_float) if col_cob else -999.0
+            if col_est:
+                est_series = get_clean_series(df_cob_raw, col_est)
+                df_cob['Estado'] = est_series.str.extract(r'([ABab])')[0].str.upper().fillna('A')
+            else:
+                df_cob['Estado'] = 'A'
+
+            df_cob['Stock'] = get_clean_series(df_cob_raw, col_stk).apply(safe_float) if col_stk else -999.0
+            df_cob['Cobertura'] = get_clean_series(df_cob_raw, col_cob).apply(safe_float) if col_cob else -999.0
             df_cob = df_cob[df_cob['Material_Str'] != ""].drop_duplicates(subset=['Material_Str'])
 
         # 3. Ventas y Margen (factVentas) - LIMPIEZA: SIN GUIONES "-"
         df_vta_raw = leer_tabla_por_ancla(url_ventas, "Material", sheet_target=0, skiprows_fallback=2)
-        df_vta_raw = df_vta_raw.loc[:, ~df_vta_raw.columns.duplicated()].copy()
-        
         df_vta = pd.DataFrame()
         col_mat_vta = 'Material' if 'Material' in df_vta_raw.columns else ('COD REAL' if 'COD REAL' in df_vta_raw.columns else None)
         if col_mat_vta:
-            df_vta['Material_Str'] = df_vta_raw[col_mat_vta].astype(str).apply(clean_sku)
+            mat_vta_series = get_clean_series(df_vta_raw, col_mat_vta).apply(clean_sku)
+            df_vta['Material_Str'] = mat_vta_series
             df_vta = df_vta[~df_vta['Material_Str'].str.contains('-', na=False)].copy()
 
             col_v = 'Monto Venta Neta' if 'Monto Venta Neta' in df_vta_raw.columns else 'Venta'
             col_m = 'Monto Margen' if 'Monto Margen' in df_vta_raw.columns else 'Margen'
             col_p = '% PART' if '% PART' in df_vta_raw.columns else '% Part'
             
-            df_vta['Venta'] = df_vta_raw[col_v].apply(safe_float) if col_v in df_vta_raw.columns else -999.0
-            df_vta['Monto Margen'] = df_vta_raw[col_m].apply(safe_float) if col_m in df_vta_raw.columns else -999.0
-            df_vta['% Part'] = df_vta_raw[col_p].apply(safe_float) if col_p in df_vta_raw.columns else -999.0
+            df_vta['Venta'] = get_clean_series(df_vta_raw, col_v).apply(safe_float) if col_v in df_vta_raw.columns else -999.0
+            df_vta['Monto Margen'] = get_clean_series(df_vta_raw, col_m).apply(safe_float) if col_m in df_vta_raw.columns else -999.0
+            df_vta['% Part'] = get_clean_series(df_vta_raw, col_p).apply(safe_float) if col_p in df_vta_raw.columns else -999.0
             df_vta = df_vta[df_vta['Material_Str'] != ""].drop_duplicates(subset=['Material_Str'])
 
         # 4. Código de Barras (dimCodbarras)
         df_bar_raw = leer_tabla_por_ancla(url_barras, "Material", sheet_target=0, skiprows_fallback=2)
-        df_bar_raw = df_bar_raw.loc[:, ~df_bar_raw.columns.duplicated()].copy()
-        
         df_bar = pd.DataFrame()
         col_mat_bar = 'Material' if 'Material' in df_bar_raw.columns else ('COD REAL' if 'COD REAL' in df_bar_raw.columns else None)
         if col_mat_bar:
-            df_bar['Material_Str'] = df_bar_raw[col_mat_bar].astype(str).apply(clean_sku)
-            df_bar['EAN_Master'] = df_bar_raw['Código EAN/UPC'].astype(str).apply(clean_sku) if 'Código EAN/UPC' in df_bar_raw.columns else ""
-            df_bar['Descripción'] = df_bar_raw['Texto breve de material'].astype(str).str.strip() if 'Texto breve de material' in df_bar_raw.columns else "SIN DATOS"
+            df_bar['Material_Str'] = get_clean_series(df_bar_raw, col_mat_bar).apply(clean_sku)
+            df_bar['EAN_Master'] = get_clean_series(df_bar_raw, 'Código EAN/UPC').apply(clean_sku) if 'Código EAN/UPC' in df_bar_raw.columns else ""
+            df_bar['Descripción'] = get_clean_series(df_bar_raw, 'Texto breve de material').str.strip() if 'Texto breve de material' in df_bar_raw.columns else "SIN DATOS"
             
             bar_map = {str(c).strip().lower(): c for c in df_bar_raw.columns}
             col_ga_orig = bar_map.get('grupo de a', bar_map.get('grupo de artículo', None))
-            df_bar['G.A.'] = df_bar_raw[col_ga_orig].astype(str).apply(clean_sku) if col_ga_orig else 'SIN DATOS'
+            df_bar['G.A.'] = get_clean_series(df_bar_raw, col_ga_orig).apply(clean_sku) if col_ga_orig else 'SIN DATOS'
             df_bar = df_bar[df_bar['Material_Str'] != ""].drop_duplicates(subset=['Material_Str'])
 
         # 5. Links de Fotos
         df_fotos_raw = leer_tabla_por_ancla(url_fotos, "SKUReferenceCode", sheet_target=0, skiprows_fallback=0)
-        df_fotos_raw = df_fotos_raw.loc[:, ~df_fotos_raw.columns.duplicated()].copy()
-        
         df_fotos = pd.DataFrame()
         if not df_fotos_raw.empty:
             fotos_map = {str(c).strip().lower(): c for c in df_fotos_raw.columns}
             col_sku_foto = fotos_map.get('_skureferencecode', fotos_map.get('skureferencecode', None))
             col_link_foto = fotos_map.get('links de fotos', fotos_map.get('link', None))
             if col_sku_foto and col_link_foto:
-                df_fotos['Sku_Foto_Str'] = df_fotos_raw[col_sku_foto].astype(str).apply(clean_sku)
-                df_fotos['Links de fotos'] = df_fotos_raw[col_link_foto].astype(str).str.strip()
+                df_fotos['Sku_Foto_Str'] = get_clean_series(df_fotos_raw, col_sku_foto).apply(clean_sku)
+                df_fotos['Links de fotos'] = get_clean_series(df_fotos_raw, col_link_foto).str.strip()
                 df_fotos = df_fotos[df_fotos['Sku_Foto_Str'] != ""].drop_duplicates(subset=['Sku_Foto_Str'])
 
         # 6. Nueva Jerarquía Comercial SAP
@@ -1789,11 +1827,11 @@ def cargar_todas_las_fuentes():
             col_h_cat = df_sap_raw.columns[7]
             col_n_ga = df_sap_raw.columns[13] if len(df_sap_raw.columns) > 13 else df_sap_raw.columns[10]
 
-            df_sap['CodGA_Str'] = df_sap_raw[col_k_codga].astype(str).apply(clean_sku)
-            df_sap['Departamento'] = df_sap_raw[col_d_depto].fillna('SIN DATOS').astype(str).str.strip()
-            df_sap['Sección'] = df_sap_raw[col_f_seccion].fillna('SIN DATOS').astype(str).str.strip()
-            df_sap['Categoría'] = df_sap_raw[col_h_cat].fillna('SIN DATOS').astype(str).str.strip()
-            df_sap['Grupo de Artículo'] = df_sap_raw[col_n_ga].fillna('SIN DATOS').astype(str).str.strip()
+            df_sap['CodGA_Str'] = get_clean_series(df_sap_raw, col_k_codga).apply(clean_sku)
+            df_sap['Departamento'] = get_clean_series(df_sap_raw, col_d_depto).fillna('SIN DATOS').str.strip()
+            df_sap['Sección'] = get_clean_series(df_sap_raw, col_f_seccion).fillna('SIN DATOS').str.strip()
+            df_sap['Categoría'] = get_clean_series(df_sap_raw, col_h_cat).fillna('SIN DATOS').str.strip()
+            df_sap['Grupo de Artículo'] = get_clean_series(df_sap_raw, col_n_ga).fillna('SIN DATOS').str.strip()
             df_sap = df_sap[df_sap['CodGA_Str'] != ""].drop_duplicates(subset=['CodGA_Str'])
 
         # --- APLICACIÓN DE CRUCES PARA EL PASILLO (DF_MATRIZ) ---
@@ -1817,7 +1855,7 @@ def cargar_todas_las_fuentes():
             df_pasillo_base.drop(columns=['Sku_Foto_Str'], inplace=True, errors='ignore')
 
         if 'G.A.' in df_pasillo_base.columns:
-            df_pasillo_base['G.A._Str'] = df_pasillo_base['G.A.'].astype(str).apply(clean_sku)
+            df_pasillo_base['G.A._Str'] = get_clean_series(df_pasillo_base, 'G.A.').apply(clean_sku)
         else:
             df_pasillo_base['G.A._Str'] = ""
 
@@ -1866,7 +1904,7 @@ def cargar_todas_las_fuentes():
                 return f"C{p[0]} (N{p[1]})"
             return f"Cuerpo {val_str}"
 
-        df_matriz['Ubicacion_Fmt'] = df_matriz['Bandeja'].apply(formatear_bandeja_limpia)
+        df_matriz['Ubicacion_Fmt'] = get_clean_series(df_matriz, 'Bandeja').apply(formatear_bandeja_limpia)
         mapa_ubicaciones = df_matriz.groupby('COD_REAL_Str')['Ubicacion_Fmt'].apply(
             lambda x: ", ".join(sorted(list(set(x.dropna()))))
         ).to_dict()
@@ -1888,7 +1926,7 @@ def cargar_todas_las_fuentes():
             df_sku_unico.drop(columns=['Material_Str'], inplace=True, errors='ignore')
 
         if 'G.A.' in df_sku_unico.columns:
-            df_sku_unico['G.A._Str'] = df_sku_unico['G.A.'].astype(str).apply(clean_sku)
+            df_sku_unico['G.A._Str'] = get_clean_series(df_sku_unico, 'G.A.').apply(clean_sku)
         else:
             df_sku_unico['G.A._Str'] = ""
 
@@ -2085,7 +2123,6 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             
             st.markdown('<div class="dash-card">', unsafe_allow_html=True)
             
-            # Agrupar quiebres y ventas por categoría
             ventas_por_cat = df_unicos.groupby('Categoría')['Venta_Num'].sum()
             total_vta_unicos = ventas_por_cat.sum()
             quiebres_por_cat = quiebres_df.groupby('Categoría')['COD REAL'].count()
@@ -2098,12 +2135,10 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             df_cat_ops = df_cat_ops[~df_cat_ops['Categoría'].isin(['SIN DATOS', 'S/C', 'nan', ''])].copy()
             df_cat_ops['Part_Venta'] = (df_cat_ops['Venta'] / total_vta_unicos) if total_vta_unicos > 0 else 0
             
-            # Ordenar por quiebres y filtrar top 10
             df_cat_ops = df_cat_ops.sort_values(by=['Quiebres', 'Part_Venta'], ascending=[False, False]).head(10)
             
             fig_ops = make_subplots(specs=[[{"secondary_y": True}]])
             
-            # Barras: Cantidad de Quiebres
             fig_ops.add_trace(
                 go.Bar(
                     x=df_cat_ops['Categoría'],
@@ -2118,7 +2153,6 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
                 ), secondary_y=False
             )
             
-            # Línea: % de Participación de Ventas
             fig_ops.add_trace(
                 go.Scatter(
                     x=df_cat_ops['Categoría'],
@@ -2238,7 +2272,7 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
         with col_view2:
             st.markdown(f"<div style='text-align: right; font-size: 0.80rem; color: {text_muted}; margin-top: 5px;'>👆 <i>Toca el título de un cuerpo para enfocarlo al 100% de la pantalla.</i></div>", unsafe_allow_html=True)
             
-        bandeja_series = df_base.get('Bandeja', pd.Series(["1.1"]*len(df_base))).astype(str)
+        bandeja_series = get_clean_series(df_base, 'Bandeja').replace('', '1.1')
         niveles_extraidos = bandeja_series.str.extract(r'(\d+)\.(\d+)')[1]
         max_niveles_count = int(pd.to_numeric(niveles_extraidos, errors='coerce').fillna(6).max())
         altura_dinamica = max(950, 240 + max_niveles_count * 140)
@@ -2370,10 +2404,10 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             p_col = 'PASILLO' if 'PASILLO' in df_dash_base.columns else 'Pasillo'
             l_col = 'LATERAL' if 'LATERAL' in df_dash_base.columns else 'Lateral'
             
-            df_dash_base['Pasillo_Key'] = df_dash_base[p_col].astype(str).str.strip().str.upper() if p_col else "1"
-            df_dash_base['Lateral_Key'] = df_dash_base[l_col].astype(str).str.strip().str.upper() if l_col else "A"
+            df_dash_base['Pasillo_Key'] = get_clean_series(df_dash_base, p_col).str.strip().str.upper() if p_col else "1"
+            df_dash_base['Lateral_Key'] = get_clean_series(df_dash_base, l_col).str.strip().str.upper() if l_col else "A"
             
-            bandeja_str = df_dash_base.get('Bandeja', pd.Series(["1.1"]*len(df_dash_base))).astype(str)
+            bandeja_str = get_clean_series(df_dash_base, 'Bandeja').replace('', '1.1')
             df_dash_base['Cuerpo_Num'] = bandeja_str.str.extract(r'(\d+)\.(\d+)')[0]
             df_dash_base['Cuerpo_Num'] = pd.to_numeric(df_dash_base['Cuerpo_Num'], errors='coerce').fillna(1)
             
@@ -2616,7 +2650,7 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
                 insidetextanchor='middle',
                 textfont=dict(color='#ffffff', size=10, family='Inter', weight='bold'),
                 marker=dict(color='#d97706', line=dict(color='#b45309', width=1)),
-                hovertemplate="<b>%{x}</b><br>% Margen: %{text}<br>Margen S/: %{customdata[0]:,.2f}<extra></extra>",
+                hovertemplate="<b>%{x}</b><br>% Margen: %{text}<br>Margen S/: %{customdata[0]:,.2f}<br>SKUs Únicos Activos: %{customdata[1]}<extra></extra>",
                 customdata=df_fs[['Margen_Total', 'SKUs_Activos']]
             ))
             
