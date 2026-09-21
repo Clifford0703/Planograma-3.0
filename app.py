@@ -14,95 +14,51 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- GESTIÓN DE TEMA GLOBAL (FIJO EN MODO CLARO) ---
-if "tema_actual" not in st.session_state:
-    st.session_state.tema_actual = "light"
-
+# --- PALETA DESIGN SYSTEM (MODO CLARO FIJO) ---
 es_oscuro = False
-
-# --- PALETA DESIGN SYSTEM UNIFICADA ---
-theme_vars = {
-    "dark": {
-        "bg_app": "#070d19",
-        "bg_surface": "#0f172a",
-        "bg_card": "#111c30",
-        "border": "#1e3a8a",
-        "border_subtle": "#1e293b",
-        "text_primary": "#ffffff",
-        "text_secondary": "#93c5fd",
-        "text_muted": "#94a3b8",
-        "accent": "#3b82f6",
-        "accent_green": "#10b981",
-        "accent_purple": "#8b5cf6",
-        "accent_amber": "#fbbf24",
-        "grid_color": "rgba(255, 255, 255, 0.08)",
-        "card_shadow": "0 4px 10px rgba(0,0,0,0.4)",
-        "plotly_text": "#cbd5e1",
-        "input_bg": "#111c30",
-        "input_border": "#1e3a8a",
-        "input_text": "#ffffff",
-        "popover_bg": "#111c30",
-        "popover_border": "#1e3a8a",
-        "popover_text": "#ffffff",
-        "popover_hover": "#1e3a8a",
-        "popover_hover_text": "#60a5fa",
-        "btn_bg": "#111c30",
-        "btn_text": "#ffffff",
-        "tab_container_bg": "#0f172a",
-        "tab_inactive_bg": "#111c30",
-        "tab_inactive_text": "#cbd5e1",
-        "tab_inactive_border": "#1e293b",
-        "insight_green_bg": "rgba(16, 185, 129, 0.12)",
-        "insight_green_text": "#6ee7b7",
-        "insight_amber_bg": "rgba(245, 158, 11, 0.12)",
-        "insight_amber_text": "#fde047",
-        "insight_blue_bg": "rgba(59, 130, 246, 0.12)",
-        "insight_blue_text": "#93c5fd",
-    },
-    "light": {
-        "bg_app": "#f8fafc",
-        "bg_surface": "#ffffff",
-        "bg_card": "#ffffff",
-        "border": "#2563eb",
-        "border_subtle": "#cbd5e1",
-        "text_primary": "#0f172a",
-        "text_secondary": "#2563eb",
-        "text_muted": "#475569",
-        "accent": "#2563eb",
-        "accent_green": "#059669",
-        "accent_purple": "#7c3aed",
-        "accent_amber": "#d97706",
-        "grid_color": "rgba(0, 0, 0, 0.06)",
-        "card_shadow": "0 2px 6px rgba(0,0,0,0.05)",
-        "plotly_text": "#0f172a",
-        "input_bg": "#ffffff",
-        "input_border": "#cbd5e1",
-        "input_text": "#0f172a",
-        "popover_bg": "#ffffff",
-        "popover_border": "#cbd5e1",
-        "popover_text": "#0f172a",
-        "popover_hover": "#eff6ff",
-        "popover_hover_text": "#2563eb",
-        "btn_bg": "#ffffff",
-        "btn_text": "#0f172a",
-        "tab_container_bg": "#f1f5f9",
-        "tab_inactive_bg": "#e2e8f0",
-        "tab_inactive_text": "#0f172a",
-        "tab_inactive_border": "#cbd5e1",
-        "insight_green_bg": "#dcfce7",
-        "insight_green_text": "#14532d",
-        "insight_amber_bg": "#fef3c7",
-        "insight_amber_text": "#78350f",
-        "insight_blue_bg": "#eff6ff",
-        "insight_blue_text": "#1e40af",
-    }
+t = {
+    "bg_app": "#f8fafc",
+    "bg_surface": "#ffffff",
+    "bg_card": "#ffffff",
+    "border": "#2563eb",
+    "border_subtle": "#cbd5e1",
+    "text_primary": "#0f172a",
+    "text_secondary": "#2563eb",
+    "text_muted": "#475569",
+    "accent": "#2563eb",
+    "accent_green": "#059669",
+    "accent_purple": "#7c3aed",
+    "accent_amber": "#d97706",
+    "grid_color": "rgba(0, 0, 0, 0.06)",
+    "card_shadow": "0 2px 6px rgba(0,0,0,0.05)",
+    "plotly_text": "#0f172a",
+    "input_bg": "#ffffff",
+    "input_border": "#cbd5e1",
+    "input_text": "#0f172a",
+    "popover_bg": "#ffffff",
+    "popover_border": "#cbd5e1",
+    "popover_text": "#0f172a",
+    "popover_hover": "#eff6ff",
+    "popover_hover_text": "#2563eb",
+    "btn_bg": "#ffffff",
+    "btn_text": "#0f172a",
+    "tab_container_bg": "#f1f5f9",
+    "tab_inactive_bg": "#e2e8f0",
+    "tab_inactive_text": "#0f172a",
+    "tab_inactive_border": "#cbd5e1",
+    "insight_green_bg": "#dcfce7",
+    "insight_green_text": "#14532d",
+    "insight_amber_bg": "#fef3c7",
+    "insight_amber_text": "#78350f",
+    "insight_blue_bg": "#eff6ff",
+    "insight_blue_text": "#1e40af",
 }
-t = theme_vars["light"]
+
 text_secondary = t["text_secondary"]
 text_primary = t["text_primary"]
 text_muted = t["text_muted"]
 
-# INYECCIÓN CSS CON MÁXIMO CONTRASTE
+# INYECCIÓN CSS CON ALTO CONTRASTE
 st.markdown(f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -124,10 +80,10 @@ st.markdown(f"""
         }}
         
         .block-container {{
-            padding-left: 0.4rem !important;
-            padding-right: 0.4rem !important;
+            padding-left: 1.2rem !important;
+            padding-right: 1.2rem !important;
             padding-top: 0.8rem !important;
-            padding-bottom: 1rem !important;
+            padding-bottom: 1.5rem !important;
             max-width: 100% !important;
         }}
         
@@ -182,7 +138,7 @@ st.markdown(f"""
             font-weight: 900 !important;
         }}
         
-        /* SELECTBOXES Y RADIOS */
+        /* SELECTBOXES */
         [data-testid="stSelectbox"] div[data-baseweb="select"] > div {{
             background-color: {t["input_bg"]} !important;
             background: {t["input_bg"]} !important;
@@ -246,7 +202,7 @@ st.markdown(f"""
         /* TARJETAS KPIS */
         .fin-kpi-container {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 12px;
             margin-bottom: 14px;
         }}
@@ -303,41 +259,15 @@ st.markdown(f"""
             box-shadow: {t["card_shadow"]};
         }}
 
-        .dash-card-header {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid {t["border_subtle"]};
-        }}
-
-        .dash-card-title {{
-            font-size: 0.85rem;
-            font-weight: 800;
-            color: {text_primary};
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }}
-
         .chart-scroll-wrapper {{
             width: 100%;
             overflow-x: auto;
             overflow-y: hidden;
             padding-bottom: 8px;
         }}
-        .chart-scroll-wrapper::-webkit-scrollbar {{
-            height: 8px;
-        }}
-        .chart-scroll-wrapper::-webkit-scrollbar-track {{
-            background: {t["bg_app"]};
-            border-radius: 4px;
-        }}
-        .chart-scroll-wrapper::-webkit-scrollbar-thumb {{
-            background: {t["accent"]};
-            border-radius: 4px;
-        }}
+        .chart-scroll-wrapper::-webkit-scrollbar {{ height: 8px; }}
+        .chart-scroll-wrapper::-webkit-scrollbar-track {{ background: {t["bg_app"]}; border-radius: 4px; }}
+        .chart-scroll-wrapper::-webkit-scrollbar-thumb {{ background: {t["accent"]}; border-radius: 4px; }}
 
         .insight-box {{
             border-radius: 8px;
@@ -372,44 +302,45 @@ def clean_sku(val):
         s = str(int(s))
     return s.strip()
 
-def obtener_estado_y_color(estado, stock_val, dark=True):
+# PALETA PASTEL EXACTA PARA MODO CLARO
+def obtener_estado_y_color(estado, stock_val, dark=False):
     estado = str(estado).strip().upper()
     if estado == "B": 
-        bg = "#451a1a" if dark else "#fee2e2"
-        border = "#7f1d1d" if dark else "#fca5a5"
-        tc = "#fca5a5" if dark else "#991b1b"
-        name_c = "#fecaca" if dark else "#7f1d1d"
+        bg = "#fee2e2"
+        border = "#fca5a5"
+        tc = "#991b1b"
+        name_c = "#7f1d1d"
         return bg, border, tc, name_c, "Bloqueado"
     elif estado == "SIN DATOS":
-        bg = "#1e293b" if dark else "#f1f5f9"
-        border = "#475569" if dark else "#94a3b8"
-        tc = "#94a3b8" if dark else "#475569"
-        name_c = "#f8fafc" if dark else "#0f172a"
+        bg = "#f1f5f9"
+        border = "#94a3b8"
+        tc = "#475569"
+        name_c = "#0f172a"
         return bg, border, tc, name_c, "Sin Datos"
     elif estado == "A":
         if stock_val <= 0: 
-            bg = "#431407" if dark else "#ffedd5"
-            border = "#7c2d12" if dark else "#fdba74"
-            tc = "#fdba74" if dark else "#9a3412"
-            name_c = "#ffedd5" if dark else "#7c2d12"
+            bg = "#ffedd5"
+            border = "#fdba74"
+            tc = "#9a3412"
+            name_c = "#7c2d12"
             return bg, border, tc, name_c, "Sin Stock"
         elif stock_val <= 5: 
-            bg = "#422006" if dark else "#fef9c3"
-            border = "#713f12" if dark else "#fde047"
-            tc = "#fde047" if dark else "#854d0e"
-            name_c = "#fef08a" if dark else "#713f12"
+            bg = "#fef9c3"
+            border = "#fde047"
+            tc = "#854d0e"
+            name_c = "#713f12"
             return bg, border, tc, name_c, "Stock Bajo"
         else: 
-            bg = "#064e3b" if dark else "#dcfce7"
-            border = "#065f46" if dark else "#86efac"
-            tc = "#6ee7b7" if dark else "#166534"
-            name_c = "#ecfdf5" if dark else "#14532d"
+            bg = "#dcfce7"
+            border = "#86efac"
+            tc = "#166534"
+            name_c = "#14532d"
             return bg, border, tc, name_c, "Stock OK"
     else: 
-        bg = "#1e293b" if dark else "#f1f5f9"
-        border = "#334155" if dark else "#cbd5e1"
-        tc = "#94a3b8" if dark else "#475569"
-        name_c = "#f8fafc" if dark else "#0f172a"
+        bg = "#f1f5f9"
+        border = "#cbd5e1"
+        tc = "#475569"
+        name_c = "#0f172a"
         return bg, border, tc, name_c, "Desconocido"
 
 def obtener_alerta_css(estado, stock_val):
@@ -422,8 +353,8 @@ def obtener_alerta_css(estado, stock_val):
         else: return "alerta-ok", "Stock OK"
     else: return "alerta-desconocido", "Desconocido"
 
-# --- GENERADOR DEL PASILLO INTERACTIVO ORIGINAL ---
-def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
+# --- GENERADOR DEL PASILLO INTERACTIVO (CON PASILLO / LATERAL Y PALETA CLARA) ---
+def generar_html_pasillo_interactivo(df, es_realograma=False):
     df = df.copy()
     df['FilaOriginal'] = range(len(df))
     df['TieneOrden'] = pd.to_numeric(df.get('N° ORDEN', pd.Series([None]*len(df))), errors='coerce').notna()
@@ -516,7 +447,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
                         estilo_cobertura = "color: #ef4444; font-weight: 800;" if cob_val != -999.0 and cob_val >= 30 else ""
                         
                         if es_realograma:
-                            foto_render = link_foto_final if link_foto_final else "https://via.placeholder.com/60x150.png/1e293b/94a3b8?text=Sin+Foto"
+                            foto_render = link_foto_final if link_foto_final else "https://via.placeholder.com/60x150.png/f1f5f9/94a3b8?text=Sin+Foto"
                             clase_alerta, cat_leyenda = obtener_alerta_css(estado, stock_val)
                             img_tags = "".join([f'<img src="{foto_render}" alt="{marca}">' for _ in range(caras)])
                             
@@ -531,12 +462,12 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
                             clase_wrapper = f"sku-item sku-group {clase_alerta}"
                             estilo_wrapper = f"flex: {caras};"
                         else:
-                            bg_color, border_color, text_color, name_color, cat_leyenda = obtener_estado_y_color(estado, stock_val, dark=es_oscuro)
+                            bg_color, border_color, text_color, name_color, cat_leyenda = obtener_estado_y_color(estado, stock_val, dark=False)
                             
                             html_interno = f"""
                               <div class="sku-header-row">
                                 <span class="sku-pos" style="color: {text_color}; font-weight: 800;">{pos}</span>
-                                <span class="sku-caras-tag" style="color: {text_color}; background: rgba(0,0,0,0.25); border: 1px solid {text_color}44;">{caras}C</span>
+                                <span class="sku-caras-tag" style="color: {text_color}; background: rgba(0,0,0,0.06); border: 1px solid {text_color}44;">{caras}C</span>
                               </div>
                               <div class="sku-details">
                                 <span class="sku-brand-text" style="color: {text_color};">{marca}</span>
@@ -584,8 +515,8 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
 
                 html_cuerpos += f"""
                 <div class="bay-column" data-module="{cuerpo_num}">
-                  <div class="bay-title">
-                    <span class="bay-main-title">{cuerpo_nombre.upper()}</span>
+                  <div class="bay-title" title="Haz clic para centrar a lo ancho">
+                    <span class="bay-main-title">{cuerpo_nombre.upper()} 🔍</span>
                     {subtitulo_cat}
                   </div>
                   <div class="bay-shelves">
@@ -778,7 +709,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           border-radius: 20px; 
           cursor: pointer; 
           transition: all 0.15s ease; 
-          opacity: 0.90; 
+          opacity: 0.95; 
           outline: none; 
         }}
         .legend-chip.active {{ opacity: 1; transform: scale(1.04); box-shadow: 0 0 0 2px #3b82f6 !important; }}
@@ -798,7 +729,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           overflow: hidden; 
         }}
 
-        /* BOTÓN CENTRADO HORIZONTALMENTE PARA NO TAPAR TÍTULOS */
         .btn-return-all {{
           display: none;
           position: absolute;
@@ -813,7 +743,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           padding: 7px 18px;
           font-weight: 800;
           font-size: 0.80rem;
-          box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
           cursor: pointer;
           transition: transform 0.2s ease, background 0.2s ease;
         }}
@@ -938,7 +868,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           display: block;
         }}
 
-        /* CONTENEDOR CON EFECTO IMANTADO */
         .aisle-container {{ 
           display: flex; 
           flex-direction: row; 
@@ -956,7 +885,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           align-items: flex-start;
         }}
 
-        /* MODO MULTIPLE: HASTA 4 EN ESCRITORIO CON ANCLAJE AL BORDE */
         .aisle-container.mode-multi .bay-column {{
           flex: 0 0 calc((100% - 48px) / 4) !important; 
           min-width: 280px !important; 
@@ -965,7 +893,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           scroll-snap-stop: always !important;
         }}
 
-        /* MODO 1 CUERPO: CADA CUERPO SE EXPULSA AL 100% DEL ANCHO Y SE IMANTA */
         .aisle-container.mode-single {{
           padding: 14px 0 50px 0 !important;
           scroll-snap-type: x mandatory !important;
@@ -1053,9 +980,9 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           cursor: pointer; 
           align-items: stretch; 
           flex-shrink: 0; 
-          box-shadow: 0 1px 3px rgba(0,0,0,0.15); 
+          box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
         }}
-        .sku-card:hover {{ transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.25); }}
+        .sku-card:hover {{ transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.12); }}
         .sku-card.is-top {{ outline: 2.5px solid #f59e0b !important; outline-offset: -1px; }}
         .sku-header-row {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }}
         .sku-pos {{ font-size: 0.60rem; font-weight: 900; }}
@@ -1072,13 +999,13 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
         .shelf-bottom-rail {{ height: 4px; background: {t["border_subtle"]}; border-radius: 0 0 2px 2px; }}
         .shelf-info {{ background: {card_bg}; border-left: 3px solid #3b82f6; padding: 3px 8px; font-size: 0.65rem; font-weight: 700; display: flex; justify-content: space-between; color: {text_primary}; }}
         
-        /* MODAL DE DETALLE SEGURO */
+        /* MODAL DE DETALLE */
         .modal-overlay {{ 
           position: fixed !important; 
           inset: 0 !important; 
           width: 100vw !important; 
           height: 100vh !important; 
-          background: rgba(0,0,0,0.75) !important; 
+          background: rgba(15, 23, 42, 0.6) !important; 
           z-index: 2147483647 !important; 
           opacity: 0; 
           pointer-events: none; 
@@ -1087,11 +1014,13 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           align-items: center !important; 
           justify-content: center !important; 
           padding: 16px !important; 
-          backdrop-filter: blur(6px); 
+          backdrop-filter: blur(4px); 
+          overflow-y: auto !important; 
         }}
         .modal-overlay.active {{ opacity: 1 !important; pointer-events: auto !important; }}
+        
         .modal-content {{ 
-          background: {card_bg} !important; 
+          background: #ffffff !important; 
           color: {text_primary} !important; 
           padding: 24px !important; 
           border-radius: 12px !important; 
@@ -1100,22 +1029,29 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           max-height: 85vh !important; 
           overflow-y: auto !important; 
           border: 1.5px solid {t["accent"]} !important; 
-          box-shadow: 0 20px 40px rgba(0,0,0,0.4) !important; 
+          box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important; 
           position: relative !important; 
+          margin: auto !important; 
+          z-index: 2147483647 !important; 
         }}
         .modal-close {{ position: absolute; top: 12px; right: 16px; font-size: 1.5rem; cursor: pointer; color: {text_secondary}; font-weight: 700; }}
         .modal-close:hover {{ color: {text_primary}; }}
-        .m-row {{ border-bottom: 1px solid {t["border_subtle"]}; padding: 8px 0; display: flex; justify-content: space-between; font-size: 0.82rem; }}
+        
+        .m-row {{ border-bottom: 1px solid {t["border_subtle"]}; padding: 7px 0; display: flex; justify-content: space-between; font-size: 0.82rem; }}
         .m-label {{ font-weight: 600; color: {text_secondary}; }}
         .m-val {{ font-weight: 700; text-align: right; max-width: 65%; font-feature-settings: "tnum"; }}
 
         @media (max-width: 768px) {{
+            body, html {{ height: auto !important; overflow-y: auto !important; overflow-x: hidden !important; }}
+            .main-container {{ height: auto !important; min-height: 100vh !important; overflow-y: visible !important; padding-bottom: 25px !important; }}
+            .aisle-wrapper {{ height: auto !important; min-height: fit-content !important; flex: none !important; margin-bottom: 15px !important; overflow: visible !important; }}
+            .zoom-layer {{ height: auto !important; min-height: fit-content !important; }}
+            .aisle-container {{ height: auto !important; min-height: fit-content !important; overflow-y: visible !important; padding: 8px 6px 40px 6px !important; touch-action: pan-x pan-y !important; gap: 10px !important; }}
             .nav-btn {{ display: none !important; }}
-            .aisle-container {{ padding: 8px 4px !important; touch-action: pan-x pan-y !important; }}
             .kpi-container {{ display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; }}
             .kpi-card {{ min-width: unset !important; }}
             .kpi-card:last-child {{ grid-column: 1 / -1 !important; }}
-            .bay-column {{ flex: 0 0 100% !important; width: 100% !important; max-width: 100% !important; scroll-snap-align: center !important; }}
+            .aisle-container.mode-multi .bay-column {{ flex: 0 0 88vw !important; width: 88vw !important; max-width: 88vw !important; }}
             .shelf-products {{ min-height: 70px !important; }}
             .sku-card {{ min-width: 75px !important; }}
             .sku-images-wrapper img {{ height: 70px !important; max-width: 40px !important; }}
@@ -1180,19 +1116,20 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           </div>
         </div>
 
+        <!-- LEYENDA CLARA PASTEL EXACTA -->
         <div class="legend-panel">
           <span class="legend-title">📍 Leyenda:</span>
           <div class="legend-chips">
-            <button class="legend-chip" data-filter="Bloqueado" style="--bg: {'#451a1a' if es_oscuro else '#fee2e2'}; --tc: {'#fca5a5' if es_oscuro else '#991b1b'}; --bd: 1px solid {'#7f1d1d' if es_oscuro else '#fca5a5'};">Bloqueado</button>
-            <button class="legend-chip" data-filter="Sin Stock" style="--bg: {'#431407' if es_oscuro else '#ffedd5'}; --tc: {'#fdba74' if es_oscuro else '#9a3412'}; --bd: 1px solid {'#7c2d12' if es_oscuro else '#fdba74'};">Sin Stock</button>
-            <button class="legend-chip" data-filter="Stock Bajo" style="--bg: {'#422006' if es_oscuro else '#fef9c3'}; --tc: {'#fde047' if es_oscuro else '#854d0e'}; --bd: 1px solid {'#713f12' if es_oscuro else '#fde047'};">Stock 1 a 5</button>
-            <button class="legend-chip" data-filter="Stock OK" style="--bg: {'#064e3b' if es_oscuro else '#dcfce7'}; --tc: {'#6ee7b7' if es_oscuro else '#166534'}; --bd: 1px solid {'#065f46' if es_oscuro else '#86efac'};">Stock > 5</button>
-            <button class="legend-chip" data-filter="cob-alta" style="--bg: {'#1e293b' if es_oscuro else '#ffffff'}; --tc: #ef4444; --bd: 1px solid #ef4444;">Cob ≥ 30</button>
-            <button class="legend-chip" data-filter="top-ventas" style="--bg: {'#422006' if es_oscuro else '#fef3c7'}; --tc: #d97706; --bd: 1px solid #f59e0b;">★ TOP VENTAS</button>
+            <button class="legend-chip" data-filter="Bloqueado" style="--bg: #fee2e2; --tc: #991b1b; --bd: 1px solid #fca5a5;">Bloqueado</button>
+            <button class="legend-chip" data-filter="Sin Stock" style="--bg: #ffedd5; --tc: #9a3412; --bd: 1px solid #fdba74;">Sin Stock</button>
+            <button class="legend-chip" data-filter="Stock Bajo" style="--bg: #fef9c3; --tc: #854d0e; --bd: 1px solid #fde047;">Stock 1 a 5</button>
+            <button class="legend-chip" data-filter="Stock OK" style="--bg: #dcfce7; --tc: #166534; --bd: 1px solid #86efac;">Stock > 5</button>
+            <button class="legend-chip" data-filter="cob-alta" style="--bg: #ffffff; --tc: #ef4444; --bd: 1px solid #ef4444;">Cob ≥ 30</button>
+            <button class="legend-chip" data-filter="top-ventas" style="--bg: #fef3c7; --tc: #d97706; --bd: 1px solid #f59e0b;">★ TOP VENTAS</button>
           </div>
         </div>
 
-        <!-- CONTENEDOR CON SCROLL -->
+        <!-- CONTENEDOR CON SCROLL Y MODAL INTEGRADO -->
         <div class="aisle-wrapper" id="aisleWrapper">
           
           <button id="btnReturnAll" class="btn-return-all">← Ver Múltiples Cuerpos</button>
@@ -1207,12 +1144,12 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
             
             <div class="fs-collapsible-content" id="fsCollapsible">
               <div class="legend-chips">
-                <button class="legend-chip" data-filter="Bloqueado" style="--bg: {'#451a1a' if es_oscuro else '#fee2e2'}; --tc: {'#fca5a5' if es_oscuro else '#991b1b'};">Bloqueado</button>
-                <button class="legend-chip" data-filter="Sin Stock" style="--bg: {'#431407' if es_oscuro else '#ffedd5'}; --tc: {'#fdba74' if es_oscuro else '#9a3412'};">Sin Stock</button>
-                <button class="legend-chip" data-filter="Stock Bajo" style="--bg: {'#422006' if es_oscuro else '#fef9c3'}; --tc: {'#fde047' if es_oscuro else '#854d0e'};">Stock 1-5</button>
-                <button class="legend-chip" data-filter="Stock OK" style="--bg: {'#064e3b' if es_oscuro else '#dcfce7'}; --tc: {'#6ee7b7' if es_oscuro else '#166534'};">Stock >5</button>
-                <button class="legend-chip" data-filter="cob-alta" style="--bg: {'#1e293b' if es_oscuro else '#ffffff'}; --tc: #ef4444; --bd: 1.5px solid #ef4444;">Cob ≥30</button>
-                <button class="legend-chip" data-filter="top-ventas" style="--bg: {'#422006' if es_oscuro else '#fef3c7'}; --tc: #d97706; --bd: 1.5px solid #f59e0b;">★ TOP</button>
+                <button class="legend-chip" data-filter="Bloqueado" style="--bg: #fee2e2; --tc: #991b1b; --bd: 1px solid #fca5a5;">Bloqueado</button>
+                <button class="legend-chip" data-filter="Sin Stock" style="--bg: #ffedd5; --tc: #9a3412; --bd: 1px solid #fdba74;">Sin Stock</button>
+                <button class="legend-chip" data-filter="Stock Bajo" style="--bg: #fef9c3; --tc: #854d0e; --bd: 1px solid #fde047;">Stock 1-5</button>
+                <button class="legend-chip" data-filter="Stock OK" style="--bg: #dcfce7; --tc: #166534; --bd: 1px solid #86efac;">Stock >5</button>
+                <button class="legend-chip" data-filter="cob-alta" style="--bg: #ffffff; --tc: #ef4444; --bd: 1.5px solid #ef4444;">Cob ≥30</button>
+                <button class="legend-chip" data-filter="top-ventas" style="--bg: #fef3c7; --tc: #d97706; --bd: 1.5px solid #f59e0b;">★ TOP</button>
               </div>
               
               <div class="fs-cat-wrapper">
@@ -1227,9 +1164,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
 
           <button class="nav-btn nav-btn-prev" id="btnPrev" title="Cuerpo Anterior">❮</button>
           <div class="zoom-layer" id="zoomLayer">
-            <div class="aisle-container" id="aisleContainer">
-              {html_cuerpos}
-            </div>
+            {html_pasillos}
           </div>
           <button class="nav-btn nav-btn-next" id="btnNext" title="Cuerpo Siguiente">❯</button>
         </div>
@@ -1239,7 +1174,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
       <script>
         const aisleWrapper = document.getElementById('aisleWrapper');
         const zoomLayer = document.getElementById('zoomLayer');
-        const container = document.getElementById('aisleContainer');
         const btnPrev = document.getElementById('btnPrev');
         const btnNext = document.getElementById('btnNext');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -1269,7 +1203,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
         }}
 
-        // ENFOCA UN CUERPO Y LO IMANTA AL 100% DEL ANCHO DE LA PANTALLA
         function enfocarCuerpoIndividual(targetBayElem) {{
           const container = getActiveContainer();
           if (!container || !targetBayElem) return;
@@ -1287,7 +1220,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           setTimeout(updateScrollButtons, 350);
         }}
 
-        // REGRESA A LA VISTA DE MÚLTIPLES CUERPOS
         function regresarAVistaGeneral() {{
           const container = getActiveContainer();
           if (!container) return;
@@ -1303,7 +1235,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
 
         btnReturnAll.addEventListener('click', regresarAVistaGeneral);
 
-        // CLIC EN EL TÍTULO DE UN CUERPO PARA ENFOCARLO AL 100%
         document.querySelectorAll('.bay-title').forEach(titleElem => {{
           titleElem.addEventListener('click', (e) => {{
             const bayElem = titleElem.closest('.bay-column');
@@ -1330,7 +1261,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
               startY = e.touches[0].clientY - posY;
             }}
             const now = new Date().getTime();
-            // DOBLE TOQUE: ENFOCA EL CUERPO AL 100% O REGRESA A LA VISTA GENERAL
             if (now - lastTap < 320 && now - lastTap > 0) {{
               const clickedBay = e.target.closest('.bay-column');
               if (clickedBay && !isSingleMode) {{
@@ -1358,7 +1288,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
             const currentDist = getDistance(e.touches);
             const factor = currentDist / initialDist;
             
-            // GESTO PELLIZCO PARA ALEJAR (ZOOM OUT): REGRESA A LA VISTA MULTIPLE
             if (factor < 0.88 && isSingleMode) {{
               regresarAVistaGeneral();
               isTouching = false;
@@ -1384,7 +1313,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           }});
         }}
 
-        // NAVEGACIÓN IMANTADA ENTRE CUERPOS
         btnPrev.addEventListener('click', () => {{
           const container = getActiveContainer();
           if (!container) return;
@@ -1583,7 +1511,6 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           document.getElementById('t-cob').textContent = setCob.size;
           document.getElementById('t-top').textContent = setTop.size;
 
-          // FILTRADO ESTRICTO DE CUERPOS: SE OCULTAN CUERPOS SIN PRODUCTOS COINCIDENTES
           const activeContainer = getActiveContainer();
           if (activeContainer) {{
             activeContainer.querySelectorAll('.bay-column').forEach(bay => {{
@@ -1661,24 +1588,9 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
         // MODAL DE DETALLE
         const modal = document.getElementById('productModal');
         const closeBtn = document.querySelector('.modal-close');
-        const modalImg = document.getElementById('m-img');
-        const modalPlaceholder = document.getElementById('m-placeholder');
         
         document.querySelectorAll('.sku-item').forEach(card => {{
-            card.addEventListener('click', (e) => {{
-                e.stopPropagation();
-                
-                const fotoUrl = card.getAttribute('data-foto') || '';
-                if (fotoUrl && fotoUrl.trim() !== '') {{
-                    modalImg.src = fotoUrl;
-                    modalImg.style.display = 'block';
-                    modalPlaceholder.style.display = 'none';
-                }} else {{
-                    modalImg.src = '';
-                    modalImg.style.display = 'none';
-                    modalPlaceholder.style.display = 'flex';
-                }}
-                
+            card.addEventListener('click', () => {{
                 document.getElementById('m-name').textContent = card.getAttribute('data-name');
                 document.getElementById('m-cod').textContent = card.getAttribute('data-cod');
                 document.getElementById('m-ean').textContent = card.getAttribute('data-ean');
@@ -1698,28 +1610,12 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
                 document.getElementById('m-top').textContent = isTop ? '⭐ SÍ (Top Ventas)' : 'NO';
                 
                 modal.classList.add('active');
-                document.body.classList.add('modal-active');
             }});
         }});
-        
-        function closeModal() {{
-            modal.classList.remove('active');
-            document.body.classList.remove('modal-active');
-        }}
-
-        closeBtn.addEventListener('click', closeModal);
-        window.addEventListener('click', (e) => {{ if(e.target === modal) closeModal(); }});
-
-        document.addEventListener('keydown', (e) => {{
-            if (e.key === 'Escape' && modal.classList.contains('active')) {{
-                closeModal();
-            }}
-        }});
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        window.addEventListener('click', (e) => {{ if(e.target === modal) modal.classList.remove('active'); }});
 
         setTimeout(() => {{
-          brandSelect.value = 'ALL';
-          catSelect.value = 'ALL';
-          fsCatSelect.value = 'ALL';
           applyFilters();
         }}, 100);
       </script>
@@ -1727,7 +1623,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
     </html>
     """
 
-# --- CARGA INTEGRADA DE FUENTES Y CONSTRUCCIÓN EXACTA DE LA TABLA DE SKU ÚNICO ---
+# --- CARGA INTEGRADA DE FUENTES Y CONSTRUCCIÓN EXACTA DE DATOS ---
 @st.cache_data(ttl=14400)
 def cargar_todas_las_fuentes():
     try:
@@ -2069,35 +1965,72 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
     ])
     
     # =========================================================================
-    # --- PESTAÑA 0: RESUMEN EJECUTIVO (RADIOGRAFÍA DE LA TIENDA) ---
+    # --- PESTAÑA 0: RESUMEN EJECUTIVO (RADIOGRAFÍA GERENCIAL DE LA TIENDA) ---
     # =========================================================================
     with tab_resumen:
         st.markdown(f"<h3 style='color: {text_primary}; margin-top:0;'>Radiografía Operativa y Comercial de la Tienda</h3>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color: {text_muted}; font-size:0.9rem;'>Visión global del estado del inventario y rentabilidad cruzada en piso.</p>", unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: {text_muted}; font-size:0.88rem;'>Auditoría integral de piso: quiebres de inventario, códigos fuera de planograma y ventas en riesgo.</p>", unsafe_allow_html=True)
         
-        # Cálculos ejecutivos globales
-        tot_skus = len(df_unicos)
+        # 1. Cálculos de la base completa del planograma
+        tot_skus_plano = len(df_unicos)
         quiebres_df = df_unicos[(df_unicos['Estado'].str.strip().str.upper() == 'A') & (df_unicos['Stock_Num'] <= 0)]
         tot_quiebres = len(quiebres_df)
-        pct_quiebres = (tot_quiebres / tot_skus) * 100 if tot_skus > 0 else 0
+        pct_quiebres = (tot_quiebres / tot_skus_plano) * 100 if tot_skus_plano > 0 else 0
+        
+        bloqueados_df = df_unicos[df_unicos['Estado'].str.strip().str.upper() == 'B']
+        tot_bloqueados = len(bloqueados_df)
         
         ventas_tot_plano = df_unicos['Venta_Num'].sum()
         margen_tot_plano = df_unicos['Margen_Num'].sum()
         margen_pct_plano = (margen_tot_plano / ventas_tot_plano * 100) if ventas_tot_plano > 0 else 0
         
-        c1, c2, c3, c4 = st.columns(4)
-        c1.metric("SKUs en Planograma", f"{tot_skus}")
-        c2.metric("Nivel de Quiebres (OOS)", f"{tot_quiebres} SKUs", f"{pct_quiebres:.1f}% del surtido", delta_color="inverse")
-        c3.metric("Ventas Totales", f"S/ {ventas_tot_plano:,.0f}")
-        c4.metric("Rentabilidad (Margen %)", f"{margen_pct_plano:.1f}%", f"S/ {margen_tot_plano:,.0f} Bruto")
+        # 2. Análisis de códigos NO incluidos en el planograma
+        df_no_plano = df_sku_unico_global[
+            df_sku_unico_global['Ubicación(es)'].isna() | 
+            (df_sku_unico_global['Ubicación(es)'].astype(str).str.strip() == "") | 
+            (df_sku_unico_global['Ubicación(es)'].astype(str).str.strip() == "SIN DATOS")
+        ].copy()
         
-        st.markdown("<hr style='border-color: #1e293b;'>", unsafe_allow_html=True)
+        tot_no_plano = len(df_no_plano)
+        ventas_no_plano = df_no_plano['Venta'].apply(lambda x: 0.0 if safe_float(x, -999.0) == -999.0 else safe_float(x, 0.0)).sum()
         
-        r2c1, r2c2 = st.columns([4, 6])
+        # Venta promedio histórica que se pierde/arriesga por quiebre
+        venta_en_riesgo = quiebres_df['Venta_Num'].sum()
+
+        # Fila 1: KPIs Principales
+        kpi_c1, kpi_c2, kpi_c3, kpi_c4, kpi_c5 = st.columns(5)
+        kpi_c1.metric("SKUs en Planograma", f"{tot_skus_plano}", "Exhibición física activa")
+        kpi_c2.metric("Quiebres en Piso (OOS)", f"{tot_quiebres} SKUs", f"{pct_quiebres:.1f}% en quiebre", delta_color="inverse")
+        kpi_c3.metric("SKUs Fuera de Plano", f"{tot_no_plano}", "Venden sin ubicación", delta_color="inverse")
+        kpi_c4.metric("SKUs Bloqueados (B)", f"{tot_bloqueados}", "Retirar de góndola", delta_color="inverse")
+        kpi_c5.metric("Ventas Planograma", f"S/ {ventas_tot_plano:,.0f}", f"Margen: {margen_pct_plano:.1f}%")
+        
+        # Fila 2: Alertas de Impacto Monetario
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+        col_alert1, col_alert2 = st.columns(2)
+        with col_alert1:
+            st.markdown(f"""
+                <div class="insight-box" style="background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b;">
+                    <b>🚨 Venta Directa en Riesgo por Quiebres: S/ {venta_en_riesgo:,.2f}</b><br>
+                    Hay <b>{tot_quiebres} productos con Stock 0</b> en piso que generan ventas activas. Su desabastecimiento frena la rotación inmediata.
+                </div>
+            """, unsafe_allow_html=True)
+            
+        with col_alert2:
+            st.markdown(f"""
+                <div class="insight-box" style="background-color: #fef3c7; border-left: 4px solid #f59e0b; color: #78350f;">
+                    <b>⚠️ Venta Huérfana (Sin Planograma): S/ {ventas_no_plano:,.2f}</b><br>
+                    Existen <b>{tot_no_plano} SKUs con ventas</b> registradas que no cuentan con un espacio físico asignado formalmente en el plano.
+                </div>
+            """, unsafe_allow_html=True)
+            
+        st.markdown("<hr style='border-color: #cbd5e1; margin: 16px 0;'>", unsafe_allow_html=True)
+        
+        # Fila 3: Gráficos de Diagnóstico Operativo
+        r2c1, r2c2 = st.columns([4.2, 5.8])
         
         with r2c1:
-            st.markdown(f"<h5 style='color: {text_secondary};'>Salud del Inventario en Piso</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h5 style='color: {text_secondary}; margin-bottom: 6px;'>Salud del Surtido en Góndola</h5>", unsafe_allow_html=True)
             
             def get_health(row):
                 if str(row['Estado']).strip().upper() == 'B': return 'Bloqueado'
@@ -2109,18 +2042,25 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             health_counts = df_unicos['Salud_Inv'].value_counts().reset_index()
             health_counts.columns = ['Estado de Stock', 'Cantidad']
             
-            color_map = {'Stock OK (>5)': '#10b981', 'Alerta Baja (1 a 5)': '#f59e0b', 'Quiebre (Stock 0)': '#ef4444', 'Bloqueado': '#475569'}
+            color_map = {
+                'Stock OK (>5)': '#10b981', 
+                'Alerta Baja (1 a 5)': '#f59e0b', 
+                'Quiebre (Stock 0)': '#ef4444', 
+                'Bloqueado': '#64748b'
+            }
             
             fig_h = px.pie(health_counts, values='Cantidad', names='Estado de Stock', hole=0.55, 
                            color='Estado de Stock', color_discrete_map=color_map)
-            fig_h.update_traces(textinfo='percent', textposition='inside', insidetextorientation='horizontal', textfont=dict(size=12, weight='bold', color='#ffffff'))
-            fig_h.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5, font=dict(color=text_primary)),
+            fig_h.update_traces(textinfo='percent', textposition='inside', insidetextorientation='horizontal', 
+                                textfont=dict(size=12, weight='bold', color='#ffffff'))
+            fig_h.update_layout(showlegend=True, 
+                                legend=dict(orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5, font=dict(color=text_primary)),
                                 paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=10, b=10, l=10, r=10))
             
             st.plotly_chart(fig_h, use_container_width=True, config={'displayModeBar': False})
             
         with r2c2:
-            st.markdown(f"<h5 style='color: {text_secondary};'>Top 5 Categorías con más Quiebres</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h5 style='color: {text_secondary}; margin-bottom: 6px;'>Top 5 Categorías más afectadas por Quiebres</h5>", unsafe_allow_html=True)
             if tot_quiebres > 0:
                 cat_q = quiebres_df['Categoría'].value_counts().reset_index().head(5)
                 cat_q.columns = ['Categoría', 'SKUs en Quiebre']
@@ -2136,10 +2076,10 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
                 fig_q.update_traces(textposition='inside', textfont=dict(color='#ffffff', weight='bold'))
                 st.plotly_chart(fig_q, use_container_width=True, config={'displayModeBar': False})
             else:
-                st.success("🎉 ¡No se detectaron quiebres de inventario (Stock 0) en los productos activos!")
+                st.success("🎉 ¡Excelente! No se detectaron quiebres de inventario (Stock 0) en los productos del planograma.")
     
     # =========================================================================
-    # --- PESTAÑA 1: VISTA INTERACTIVA DEL PASILLO ---
+    # --- PESTAÑA 1: VISTA INTERACTIVA DEL PASILLO (EN PALETA CLARA) ---
     # =========================================================================
     with tab1:
         col_view1, col_view2 = st.columns([1.5, 2])
@@ -2153,18 +2093,18 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             )
             es_realograma = ("Realograma" in modo_vista)
         with col_view2:
-            st.markdown(f"<div style='text-align: right; font-size: 0.80rem; color: {text_muted}; margin-top: 5px;'>👆 <i>Pellizca para Zoom o haz <b>doble toque</b> para auto-encajar el cuerpo.</i></div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align: right; font-size: 0.80rem; color: {text_muted}; margin-top: 5px;'>👆 <i>Toca el título de un cuerpo para enfocarlo al 100% de la pantalla.</i></div>", unsafe_allow_html=True)
             
         bandeja_series = df_base.get('Bandeja', pd.Series(["1.1"]*len(df_base))).astype(str)
         niveles_extraidos = bandeja_series.str.extract(r'(\d+)\.(\d+)')[1]
         max_niveles_count = int(pd.to_numeric(niveles_extraidos, errors='coerce').fillna(6).max())
         altura_dinamica = max(950, 240 + max_niveles_count * 140)
 
-        html_pasillo = generar_html_pasillo_interactivo(df_base, es_realograma=es_realograma, es_oscuro=True)
+        html_pasillo = generar_html_pasillo_interactivo(df_base, es_realograma=es_realograma)
         components.html(html_pasillo, height=altura_dinamica, scrolling=True)
             
     # =========================================================================
-    # --- PESTAÑA 2: DASHBOARD ANALÍTICO ---
+    # --- PESTAÑA 2: DASHBOARD ANALÍTICO (CON SKU COUNT EN FAIR SHARE) ---
     # =========================================================================
     with tab2:
         if "dash_orden" not in st.session_state:
@@ -2256,7 +2196,7 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
         
         st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
 
-        # --- NIVEL 2: GRÁFICOS OPERATIVOS ---
+        # Gráficos Operativos
         col_graf_izq, col_graf_der = st.columns([7.0, 3.0])
         
         with col_graf_izq:
@@ -2450,7 +2390,7 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             st.plotly_chart(fig_pie, use_container_width=True, config={'displayModeBar': False})
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # --- NIVEL 3: FAIR SHARE ANALYSIS ---
+        # --- FAIR SHARE ANALYSIS ---
         st.markdown(f"""
             <div class="dash-card">
                 <div class="dash-card-header">
@@ -2588,7 +2528,7 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # --- NIVEL 4: REPORTE OPERATIVO DETALLADO (CON EL NUEVO FILTRO) ---
+        # --- REPORTE OPERATIVO DETALLADO ---
         st.markdown(f"""
             <div class="dash-card">
                 <div class="dash-card-header">
@@ -2623,9 +2563,8 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             elif filtro_reporte == "No está en el planograma":
                 df_rep = df_rep[df_rep['Ubicación(es)'].isna() | (df_rep['Ubicación(es)'].astype(str).str.strip() == "") | (df_rep['Ubicación(es)'].astype(str).str.strip() == "SIN DATOS")]
                 
-            col_desc = 'Descripción' if 'Descripción' in df_rep.columns else 'Nombre'
             cols_to_show = [
-                'COD REAL', 'EAN', col_desc, 'Estado', 'Ubicación(es)', 
+                'COD REAL', 'EAN', 'Descripción', 'Estado', 'Ubicación(es)', 
                 'Departamento', 'Sección', 'Categoría', 'Grupo de Artículo', 
                 'Stock', 'Cobertura', 'Venta', 'Monto Margen'
             ]
