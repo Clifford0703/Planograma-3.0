@@ -14,51 +14,95 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- PALETA DESIGN SYSTEM (Fija para el iframe interactivo) ---
-es_oscuro = True
-t = {
-    "bg_app": "#070d19",
-    "bg_surface": "#0f172a",
-    "bg_card": "#111c30",
-    "border": "#1e3a8a",
-    "border_subtle": "#1e293b",
-    "text_primary": "#ffffff",
-    "text_secondary": "#93c5fd",
-    "text_muted": "#94a3b8",
-    "accent": "#3b82f6",
-    "accent_green": "#10b981",
-    "accent_purple": "#8b5cf6",
-    "accent_amber": "#fbbf24",
-    "grid_color": "rgba(255, 255, 255, 0.08)",
-    "card_shadow": "0 4px 10px rgba(0,0,0,0.4)",
-    "plotly_text": "#cbd5e1",
-    "input_bg": "#111c30",
-    "input_border": "#1e3a8a",
-    "input_text": "#ffffff",
-    "popover_bg": "#111c30",
-    "popover_border": "#1e3a8a",
-    "popover_text": "#ffffff",
-    "popover_hover": "#1e3a8a",
-    "popover_hover_text": "#60a5fa",
-    "btn_bg": "#111c30",
-    "btn_text": "#ffffff",
-    "tab_container_bg": "#0f172a",
-    "tab_inactive_bg": "#111c30",
-    "tab_inactive_text": "#cbd5e1",
-    "tab_inactive_border": "#1e293b",
-    "insight_green_bg": "rgba(16, 185, 129, 0.12)",
-    "insight_green_text": "#6ee7b7",
-    "insight_amber_bg": "rgba(245, 158, 11, 0.12)",
-    "insight_amber_text": "#fde047",
-    "insight_blue_bg": "rgba(59, 130, 246, 0.12)",
-    "insight_blue_text": "#93c5fd",
-}
+# --- GESTIÓN DE TEMA GLOBAL (FIJO EN MODO CLARO) ---
+if "tema_actual" not in st.session_state:
+    st.session_state.tema_actual = "light"
 
+es_oscuro = False
+
+# --- PALETA DESIGN SYSTEM UNIFICADA ---
+theme_vars = {
+    "dark": {
+        "bg_app": "#070d19",
+        "bg_surface": "#0f172a",
+        "bg_card": "#111c30",
+        "border": "#1e3a8a",
+        "border_subtle": "#1e293b",
+        "text_primary": "#ffffff",
+        "text_secondary": "#93c5fd",
+        "text_muted": "#94a3b8",
+        "accent": "#3b82f6",
+        "accent_green": "#10b981",
+        "accent_purple": "#8b5cf6",
+        "accent_amber": "#fbbf24",
+        "grid_color": "rgba(255, 255, 255, 0.08)",
+        "card_shadow": "0 4px 10px rgba(0,0,0,0.4)",
+        "plotly_text": "#cbd5e1",
+        "input_bg": "#111c30",
+        "input_border": "#1e3a8a",
+        "input_text": "#ffffff",
+        "popover_bg": "#111c30",
+        "popover_border": "#1e3a8a",
+        "popover_text": "#ffffff",
+        "popover_hover": "#1e3a8a",
+        "popover_hover_text": "#60a5fa",
+        "btn_bg": "#111c30",
+        "btn_text": "#ffffff",
+        "tab_container_bg": "#0f172a",
+        "tab_inactive_bg": "#111c30",
+        "tab_inactive_text": "#cbd5e1",
+        "tab_inactive_border": "#1e293b",
+        "insight_green_bg": "rgba(16, 185, 129, 0.12)",
+        "insight_green_text": "#6ee7b7",
+        "insight_amber_bg": "rgba(245, 158, 11, 0.12)",
+        "insight_amber_text": "#fde047",
+        "insight_blue_bg": "rgba(59, 130, 246, 0.12)",
+        "insight_blue_text": "#93c5fd",
+    },
+    "light": {
+        "bg_app": "#f8fafc",
+        "bg_surface": "#ffffff",
+        "bg_card": "#ffffff",
+        "border": "#2563eb",
+        "border_subtle": "#cbd5e1",
+        "text_primary": "#0f172a",
+        "text_secondary": "#2563eb",
+        "text_muted": "#475569",
+        "accent": "#2563eb",
+        "accent_green": "#059669",
+        "accent_purple": "#7c3aed",
+        "accent_amber": "#d97706",
+        "grid_color": "rgba(0, 0, 0, 0.06)",
+        "card_shadow": "0 2px 6px rgba(0,0,0,0.05)",
+        "plotly_text": "#0f172a",
+        "input_bg": "#ffffff",
+        "input_border": "#cbd5e1",
+        "input_text": "#0f172a",
+        "popover_bg": "#ffffff",
+        "popover_border": "#cbd5e1",
+        "popover_text": "#0f172a",
+        "popover_hover": "#eff6ff",
+        "popover_hover_text": "#2563eb",
+        "btn_bg": "#ffffff",
+        "btn_text": "#0f172a",
+        "tab_container_bg": "#f1f5f9",
+        "tab_inactive_bg": "#e2e8f0",
+        "tab_inactive_text": "#0f172a",
+        "tab_inactive_border": "#cbd5e1",
+        "insight_green_bg": "#dcfce7",
+        "insight_green_text": "#14532d",
+        "insight_amber_bg": "#fef3c7",
+        "insight_amber_text": "#78350f",
+        "insight_blue_bg": "#eff6ff",
+        "insight_blue_text": "#1e40af",
+    }
+}
+t = theme_vars["light"]
 text_secondary = t["text_secondary"]
 text_primary = t["text_primary"]
 text_muted = t["text_muted"]
 
-# INYECCIÓN CSS CON MÁXIMO CONTRASTE (PARA ELEMENTOS STREAMLIT)
+# INYECCIÓN CSS CON MÁXIMO CONTRASTE
 st.markdown(f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -80,10 +124,10 @@ st.markdown(f"""
         }}
         
         .block-container {{
-            padding-left: 1.2rem !important;
-            padding-right: 1.2rem !important;
-            padding-top: 1rem !important;
-            padding-bottom: 1.5rem !important;
+            padding-left: 0.4rem !important;
+            padding-right: 0.4rem !important;
+            padding-top: 0.8rem !important;
+            padding-bottom: 1rem !important;
             max-width: 100% !important;
         }}
         
@@ -199,7 +243,7 @@ st.markdown(f"""
             cursor: pointer !important;
         }}
         
-        /* TARJETAS KPIS Y DASHBOARDS */
+        /* TARJETAS KPIS */
         .fin-kpi-container {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -259,15 +303,41 @@ st.markdown(f"""
             box-shadow: {t["card_shadow"]};
         }}
 
+        .dash-card-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid {t["border_subtle"]};
+        }}
+
+        .dash-card-title {{
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: {text_primary};
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }}
+
         .chart-scroll-wrapper {{
             width: 100%;
             overflow-x: auto;
             overflow-y: hidden;
             padding-bottom: 8px;
         }}
-        .chart-scroll-wrapper::-webkit-scrollbar {{ height: 8px; }}
-        .chart-scroll-wrapper::-webkit-scrollbar-track {{ background: {t["bg_app"]}; border-radius: 4px; }}
-        .chart-scroll-wrapper::-webkit-scrollbar-thumb {{ background: {t["accent"]}; border-radius: 4px; }}
+        .chart-scroll-wrapper::-webkit-scrollbar {{
+            height: 8px;
+        }}
+        .chart-scroll-wrapper::-webkit-scrollbar-track {{
+            background: {t["bg_app"]};
+            border-radius: 4px;
+        }}
+        .chart-scroll-wrapper::-webkit-scrollbar-thumb {{
+            background: {t["accent"]};
+            border-radius: 4px;
+        }}
 
         .insight-box {{
             border-radius: 8px;
@@ -514,8 +584,8 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
 
                 html_cuerpos += f"""
                 <div class="bay-column" data-module="{cuerpo_num}">
-                  <div class="bay-title" title="Haz clic para ajustar a lo ancho">
-                    <span class="bay-main-title">{cuerpo_nombre.upper()} 🔍</span>
+                  <div class="bay-title">
+                    <span class="bay-main-title">{cuerpo_nombre.upper()}</span>
                     {subtitulo_cat}
                   </div>
                   <div class="bay-shelves">
@@ -1002,13 +1072,13 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
         .shelf-bottom-rail {{ height: 4px; background: {t["border_subtle"]}; border-radius: 0 0 2px 2px; }}
         .shelf-info {{ background: {card_bg}; border-left: 3px solid #3b82f6; padding: 3px 8px; font-size: 0.65rem; font-weight: 700; display: flex; justify-content: space-between; color: {text_primary}; }}
         
-        /* MODAL DE DETALLE */
+        /* MODAL DE DETALLE SEGURO */
         .modal-overlay {{ 
           position: fixed !important; 
           inset: 0 !important; 
           width: 100vw !important; 
           height: 100vh !important; 
-          background: rgba(0,0,0,0.78) !important; 
+          background: rgba(0,0,0,0.75) !important; 
           z-index: 2147483647 !important; 
           opacity: 0; 
           pointer-events: none; 
@@ -1018,10 +1088,8 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           justify-content: center !important; 
           padding: 16px !important; 
           backdrop-filter: blur(6px); 
-          overflow-y: auto !important;
         }}
         .modal-overlay.active {{ opacity: 1 !important; pointer-events: auto !important; }}
-        
         .modal-content {{ 
           background: {card_bg} !important; 
           color: {text_primary} !important; 
@@ -1032,57 +1100,22 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           max-height: 85vh !important; 
           overflow-y: auto !important; 
           border: 1.5px solid {t["accent"]} !important; 
-          box-shadow: 0 25px 50px rgba(0,0,0,0.6) !important; 
+          box-shadow: 0 20px 40px rgba(0,0,0,0.4) !important; 
           position: relative !important; 
-          margin: auto !important;
-          z-index: 2147483647 !important; 
         }}
         .modal-close {{ position: absolute; top: 12px; right: 16px; font-size: 1.5rem; cursor: pointer; color: {text_secondary}; font-weight: 700; }}
         .modal-close:hover {{ color: {text_primary}; }}
-        
-        .modal-img-container {{
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          margin-bottom: 14px;
-          background: {t["bg_surface"]};
-          border: 1px solid {t["border_subtle"]};
-          border-radius: 8px;
-          padding: 10px;
-          min-height: 120px;
-        }}
-        .modal-img-container img {{
-          max-height: 140px;
-          max-width: 100%;
-          object-fit: contain;
-        }}
-        .modal-img-placeholder {{
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 6px;
-          color: {text_muted};
-          font-size: 0.78rem;
-          font-weight: 700;
-        }}
-        .modal-img-placeholder span {{ font-size: 2.2rem; }}
-        
-        .m-row {{ border-bottom: 1px solid {t["border_subtle"]}; padding: 7px 0; display: flex; justify-content: space-between; font-size: 0.82rem; }}
+        .m-row {{ border-bottom: 1px solid {t["border_subtle"]}; padding: 8px 0; display: flex; justify-content: space-between; font-size: 0.82rem; }}
         .m-label {{ font-weight: 600; color: {text_secondary}; }}
         .m-val {{ font-weight: 700; text-align: right; max-width: 65%; font-feature-settings: "tnum"; }}
 
         @media (max-width: 768px) {{
-            body, html {{ height: auto !important; overflow-y: auto !important; overflow-x: hidden !important; }}
-            .main-container {{ height: auto !important; min-height: 100vh !important; overflow-y: visible !important; padding-bottom: 25px !important; }}
-            .aisle-wrapper {{ height: auto !important; min-height: fit-content !important; flex: none !important; margin-bottom: 15px !important; overflow: visible !important; }}
-            .zoom-layer {{ height: auto !important; min-height: fit-content !important; }}
-            .aisle-container {{ height: auto !important; min-height: fit-content !important; overflow-y: visible !important; padding: 8px 6px 40px 6px !important; touch-action: pan-x pan-y !important; gap: 10px !important; }}
             .nav-btn {{ display: none !important; }}
+            .aisle-container {{ padding: 8px 4px !important; touch-action: pan-x pan-y !important; }}
             .kpi-container {{ display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; }}
             .kpi-card {{ min-width: unset !important; }}
             .kpi-card:last-child {{ grid-column: 1 / -1 !important; }}
-            .aisle-container.mode-multi .bay-column {{ flex: 0 0 88vw !important; width: 88vw !important; max-width: 88vw !important; }}
+            .bay-column {{ flex: 0 0 100% !important; width: 100% !important; max-width: 100% !important; scroll-snap-align: center !important; }}
             .shelf-products {{ min-height: 70px !important; }}
             .sku-card {{ min-width: 75px !important; }}
             .sku-images-wrapper img {{ height: 70px !important; max-width: 40px !important; }}
@@ -1159,7 +1192,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
           </div>
         </div>
 
-        <!-- CONTENEDOR CON SCROLL Y MODAL INTEGRADO -->
+        <!-- CONTENEDOR CON SCROLL -->
         <div class="aisle-wrapper" id="aisleWrapper">
           
           <button id="btnReturnAll" class="btn-return-all">← Ver Múltiples Cuerpos</button>
@@ -1194,7 +1227,9 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
 
           <button class="nav-btn nav-btn-prev" id="btnPrev" title="Cuerpo Anterior">❮</button>
           <div class="zoom-layer" id="zoomLayer">
-            {html_pasillos}
+            <div class="aisle-container" id="aisleContainer">
+              {html_cuerpos}
+            </div>
           </div>
           <button class="nav-btn nav-btn-next" id="btnNext" title="Cuerpo Siguiente">❯</button>
         </div>
@@ -1204,6 +1239,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
       <script>
         const aisleWrapper = document.getElementById('aisleWrapper');
         const zoomLayer = document.getElementById('zoomLayer');
+        const container = document.getElementById('aisleContainer');
         const btnPrev = document.getElementById('btnPrev');
         const btnNext = document.getElementById('btnNext');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -1625,6 +1661,8 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
         // MODAL DE DETALLE
         const modal = document.getElementById('productModal');
         const closeBtn = document.querySelector('.modal-close');
+        const modalImg = document.getElementById('m-img');
+        const modalPlaceholder = document.getElementById('m-placeholder');
         
         document.querySelectorAll('.sku-item').forEach(card => {{
             card.addEventListener('click', (e) => {{
@@ -1689,7 +1727,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False, es_oscuro=True):
     </html>
     """
 
-# --- CARGA INTEGRADA DE FUENTES Y CRUCE EXACTO REQUERIDO ---
+# --- CARGA INTEGRADA DE FUENTES Y CONSTRUCCIÓN EXACTA DE LA TABLA DE SKU ÚNICO ---
 @st.cache_data(ttl=14400)
 def cargar_todas_las_fuentes():
     try:
@@ -2017,6 +2055,8 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
     col_unid_bandeja = 'Total Unid en Bandeja' if 'Total Unid en Bandeja' in df_base.columns else ('Total_Unidades' if 'Total_Unidades' in df_base.columns else 'Stock')
     df_base['Unid_Bandeja_Num'] = df_base[col_unid_bandeja].apply(lambda x: 0.0 if safe_float(x, -999.0) == -999.0 else safe_float(x, 0.0))
     
+    df_base = df_base.loc[:, ~df_base.columns.duplicated()].copy()
+    
     # Preparar df_unicos para el dashboard y la radiografía
     df_unicos = df_base.drop_duplicates(subset=['COD REAL']).copy()
     df_unicos = df_unicos[df_unicos['COD REAL'].astype(str).str.strip() != ""]
@@ -2029,7 +2069,7 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
     ])
     
     # =========================================================================
-    # --- NUEVA PESTAÑA 0: RESUMEN EJECUTIVO (RADIOGRAFÍA DE LA TIENDA) ---
+    # --- PESTAÑA 0: RESUMEN EJECUTIVO (RADIOGRAFÍA DE LA TIENDA) ---
     # =========================================================================
     with tab_resumen:
         st.markdown(f"<h3 style='color: {text_primary}; margin-top:0;'>Radiografía Operativa y Comercial de la Tienda</h3>", unsafe_allow_html=True)
@@ -2509,7 +2549,7 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             )
             
             fig_fs.update_xaxes(fixedrange=True)
-            fig.update_yaxes(fixedrange=True)
+            fig_fs.update_yaxes(fixedrange=True)
             st.plotly_chart(fig_fs, use_container_width=True, config={'displayModeBar': False})
             
             subdimensionados = df_fs[(df_fs['Brecha_Share'] > 0.03) | (df_fs['Brecha_Margen'] > 0.03)]
@@ -2583,12 +2623,16 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             elif filtro_reporte == "No está en el planograma":
                 df_rep = df_rep[df_rep['Ubicación(es)'].isna() | (df_rep['Ubicación(es)'].astype(str).str.strip() == "") | (df_rep['Ubicación(es)'].astype(str).str.strip() == "SIN DATOS")]
                 
+            col_desc = 'Descripción' if 'Descripción' in df_rep.columns else 'Nombre'
             cols_to_show = [
-                'COD REAL', 'EAN', 'Descripción', 'Estado', 'Ubicación(es)', 
+                'COD REAL', 'EAN', col_desc, 'Estado', 'Ubicación(es)', 
                 'Departamento', 'Sección', 'Categoría', 'Grupo de Artículo', 
                 'Stock', 'Cobertura', 'Venta', 'Monto Margen'
             ]
             cols_to_show = [c for c in cols_to_show if c in df_rep.columns]
+            cols_to_show = list(dict.fromkeys(cols_to_show))
+            
+            df_rep = df_rep.loc[:, ~df_rep.columns.duplicated()].copy()
 
             with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
                 df_rep[cols_to_show].to_excel(writer, index=False, sheet_name='Reporte_SKUs')
@@ -2639,6 +2683,9 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
 
         if total_filas_errores > 0:
             cols_error_show = [c for c in ['COD REAL', 'EAN', 'Descripción', 'Bandeja', 'Marca', 'Stock', 'Cobertura', 'Venta', 'Estado', 'Departamento', 'G.A.'] if c in df_errores.columns]
+            cols_error_show = list(dict.fromkeys(cols_error_show))
+            
+            df_errores = df_errores.loc[:, ~df_errores.columns.duplicated()].copy()
             st.dataframe(df_errores[cols_error_show], use_container_width=True, hide_index=True)
         else:
             st.success("🎉 ¡Excelente noticia! No se detectaron errores ni filas sin coincidencia en los cruces de datos.")
