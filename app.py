@@ -321,13 +321,31 @@ def clean_sku(val):
     return s.strip()
 
 def get_clean_series(df, col_name):
-    """Extrae de forma segura una sola Series de texto, garantizando que no sea DataFrame."""
+    """Extrae de forma segura una sola Series de texto garantizando que nunca sea DataFrame."""
     if col_name not in df.columns:
         return pd.Series([""] * len(df), index=df.index, dtype=str)
     item = df[col_name]
     if isinstance(item, pd.DataFrame):
         item = item.iloc[:, 0]
     return item.astype(str)
+
+def sanitizar_columna_str(df, col, default="SIN DATOS"):
+    """Limpia y reasigna una columna de texto en df eliminando duplicados."""
+    if col in df.columns:
+        s = get_clean_series(df, col).fillna(default).astype(str).str.strip()
+        df.drop(columns=[col], inplace=True, errors='ignore')
+        df[col] = s
+    else:
+        df[col] = default
+
+def sanitizar_columna_num(df, col, default=-999.0):
+    """Limpia y reasigna una columna numérica en df eliminando duplicados."""
+    if col in df.columns:
+        s = get_clean_series(df, col).apply(lambda x: safe_float(x, default))
+        df.drop(columns=[col], inplace=True, errors='ignore')
+        df[col] = s
+    else:
+        df[col] = default
 
 # PALETA PASTEL EXACTA PARA MODO CLARO
 def obtener_estado_y_color(estado, stock_val, dark=False):
@@ -784,10 +802,10 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
           min-height: 54px;
           z-index: 10000; 
           backdrop-filter: blur(12px); 
-          flex-direction: column;
+          flex-direction: column; 
           gap: 8px; 
           box-sizing: border-box; 
-          flex-shrink: 0 !important;
+          flex-shrink: 0 !important; 
         }}
 
         .fs-header-row {{ display: flex; align-items: center; justify-content: space-between; width: 100%; }}
@@ -907,7 +925,7 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
           scroll-snap-type: x mandatory;
           width: 100%; 
           height: auto; 
-          min-height: fit-content;
+          min-height: fit-content; 
           box-sizing: border-box; 
           align-items: flex-start;
         }}
@@ -1615,24 +1633,9 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
         // MODAL DE DETALLE
         const modal = document.getElementById('productModal');
         const closeBtn = document.querySelector('.modal-close');
-        const modalImg = document.getElementById('m-img');
-        const modalPlaceholder = document.getElementById('m-placeholder');
         
         document.querySelectorAll('.sku-item').forEach(card => {{
-            card.addEventListener('click', (e) => {{
-                e.stopPropagation();
-                
-                const fotoUrl = card.getAttribute('data-foto') || '';
-                if (fotoUrl && fotoUrl.trim() !== '') {{
-                    modalImg.src = fotoUrl;
-                    modalImg.style.display = 'block';
-                    modalPlaceholder.style.display = 'none';
-                }} else {{
-                    modalImg.src = '';
-                    modalImg.style.display = 'none';
-                    modalPlaceholder.style.display = 'flex';
-                }}
-                
+            card.addEventListener('click', () => {{
                 document.getElementById('m-name').textContent = card.getAttribute('data-name');
                 document.getElementById('m-cod').textContent = card.getAttribute('data-cod');
                 document.getElementById('m-ean').textContent = card.getAttribute('data-ean');
@@ -1652,28 +1655,12 @@ def generar_html_pasillo_interactivo(df, es_realograma=False):
                 document.getElementById('m-top').textContent = isTop ? '⭐ SÍ (Top Ventas)' : 'NO';
                 
                 modal.classList.add('active');
-                document.body.classList.add('modal-active');
             }});
         }});
-        
-        function closeModal() {{
-            modal.classList.remove('active');
-            document.body.classList.remove('modal-active');
-        }}
-
-        closeBtn.addEventListener('click', closeModal);
-        window.addEventListener('click', (e) => {{ if(e.target === modal) closeModal(); }});
-
-        document.addEventListener('keydown', (e) => {{
-            if (e.key === 'Escape' && modal.classList.contains('active')) {{
-                closeModal();
-            }}
-        }});
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        window.addEventListener('click', (e) => {{ if(e.target === modal) modal.classList.remove('active'); }});
 
         setTimeout(() => {{
-          brandSelect.value = 'ALL';
-          catSelect.value = 'ALL';
-          fsCatSelect.value = 'ALL';
           applyFilters();
         }}, 100);
       </script>
@@ -1834,23 +1821,30 @@ def cargar_todas_las_fuentes():
             df_sap['Grupo de Artículo'] = get_clean_series(df_sap_raw, col_n_ga).fillna('SIN DATOS').str.strip()
             df_sap = df_sap[df_sap['CodGA_Str'] != ""].drop_duplicates(subset=['CodGA_Str'])
 
-        # --- APLICACIÓN DE CRUCES PARA EL PASILLO (DF_MATRIZ) ---
+        # --- APLICACIÓN DE CRUCES PARA EL PASILLO (DF_MATRIZ) LIMPIANDO COLUMNAS PREVIAMENTE ---
         df_pasillo_base = df_matriz.copy()
         
         if not df_cob.empty:
+            df_pasillo_base.drop(columns=[c for c in ['Estado', 'Stock', 'Cobertura'] if c in df_pasillo_base.columns], inplace=True, errors='ignore')
             df_pasillo_base = df_pasillo_base.merge(df_cob[['Material_Str', 'Estado', 'Stock', 'Cobertura']], left_on='COD_REAL_Str', right_on='Material_Str', how='left')
             df_pasillo_base.drop(columns=['Material_Str'], inplace=True, errors='ignore')
 
         if not df_vta.empty:
+            df_pasillo_base.drop(columns=[c for c in ['Venta', 'Monto Margen', '% Part'] if c in df_pasillo_base.columns], inplace=True, errors='ignore')
             df_pasillo_base = df_pasillo_base.merge(df_vta[['Material_Str', 'Venta', 'Monto Margen', '% Part']], left_on='COD_REAL_Str', right_on='Material_Str', how='left')
             df_pasillo_base.drop(columns=['Material_Str'], inplace=True, errors='ignore')
 
         if not df_bar.empty:
+            df_pasillo_base.drop(columns=[c for c in ['EAN_Master', 'G.A.'] if c in df_pasillo_base.columns], inplace=True, errors='ignore')
             df_pasillo_base = df_pasillo_base.merge(df_bar[['Material_Str', 'EAN_Master', 'G.A.']], left_on='COD_REAL_Str', right_on='Material_Str', how='left')
-            df_pasillo_base.rename(columns={'EAN_Master': 'EAN'}, inplace=True)
+            if 'EAN' not in df_pasillo_base.columns:
+                df_pasillo_base.rename(columns={'EAN_Master': 'EAN'}, inplace=True)
+            else:
+                df_pasillo_base.drop(columns=['EAN_Master'], inplace=True, errors='ignore')
             df_pasillo_base.drop(columns=['Material_Str'], inplace=True, errors='ignore')
 
         if not df_fotos.empty:
+            df_pasillo_base.drop(columns=[c for c in ['Links de fotos'] if c in df_pasillo_base.columns], inplace=True, errors='ignore')
             df_pasillo_base = df_pasillo_base.merge(df_fotos[['Sku_Foto_Str', 'Links de fotos']], left_on='COD_REAL_Str', right_on='Sku_Foto_Str', how='left')
             df_pasillo_base.drop(columns=['Sku_Foto_Str'], inplace=True, errors='ignore')
 
@@ -1870,21 +1864,23 @@ def cargar_todas_las_fuentes():
             for col_target in ['Departamento', 'Sección', 'Categoría', 'Grupo de Artículo']:
                 col_sap_name = f"{col_target}_sap"
                 if col_sap_name in df_pasillo_base.columns:
-                    df_pasillo_base[col_target] = df_pasillo_base[col_sap_name].replace(['SIN DATOS', 'nan', 'None', '', 'NaN'], pd.NA).fillna(df_pasillo_base[col_target])
+                    target_s = get_clean_series(df_pasillo_base, col_target)
+                    sap_s = get_clean_series(df_pasillo_base, col_sap_name)
+                    df_pasillo_base[col_target] = sap_s.replace(['SIN DATOS', 'nan', 'None', '', 'NaN'], pd.NA).fillna(target_s)
                     df_pasillo_base.drop(columns=[col_sap_name], inplace=True, errors='ignore')
 
             df_pasillo_base.drop(columns=['CodGA_Str', 'G.A._Str'], inplace=True, errors='ignore')
 
         for col, val_def in [('Stock', -999.0), ('Cobertura', -999.0), ('Venta', -999.0), ('Monto Margen', -999.0), ('% Part', -999.0)]:
-            df_pasillo_base[col] = df_pasillo_base[col].fillna(val_def) if col in df_pasillo_base.columns else val_def
+            sanitizar_columna_num(df_pasillo_base, col, val_def)
 
         for col, val_def in [('Estado', 'SIN DATOS'), ('Departamento', 'SIN DATOS'), ('Sección', 'SIN DATOS'), ('Categoría', 'SIN DATOS'), ('Grupo de Artículo', 'SIN DATOS'), ('G.A.', 'SIN DATOS'), ('Links de fotos', 'SIN DATOS'), ('Descripción', 'SIN DATOS'), ('EAN', 'SIN DATOS'), ('PASILLO', '1'), ('LATERAL', 'A')]:
-            df_pasillo_base[col] = df_pasillo_base[col].fillna(val_def).astype(str).str.strip() if col in df_pasillo_base.columns else val_def
+            sanitizar_columna_str(df_pasillo_base, col, val_def)
 
         if 'Bandeja' in df_pasillo_base.columns and 'EAN' in df_pasillo_base.columns:
             df_pasillo_base = df_pasillo_base.dropna(subset=["Bandeja", "EAN"], how="all")
 
-        # --- CONSTRUCCIÓN DE LA TABLA DE SKU ÚNICO ---
+        # --- CONSTRUCCIÓN DE LA TABLA DE SKU ÚNICO LIMPIANDO COLUMNAS PREVIAMENTE ---
         if not df_vta.empty:
             materiales_vta_validos = df_vta[['Material_Str']].copy()
             materiales_vta_validos = materiales_vta_validos[~materiales_vta_validos['Material_Str'].str.contains('-', na=False)]
@@ -1941,17 +1937,19 @@ def cargar_todas_las_fuentes():
             for col_target in ['Departamento', 'Sección', 'Categoría', 'Grupo de Artículo']:
                 col_sap_name = f"{col_target}_sap"
                 if col_sap_name in df_sku_unico.columns:
-                    df_sku_unico[col_target] = df_sku_unico[col_sap_name].replace(['SIN DATOS', 'nan', 'None', '', 'NaN'], pd.NA).fillna(df_sku_unico[col_target])
+                    target_s = get_clean_series(df_sku_unico, col_target)
+                    sap_s = get_clean_series(df_sku_unico, col_sap_name)
+                    df_sku_unico[col_target] = sap_s.replace(['SIN DATOS', 'nan', 'None', '', 'NaN'], pd.NA).fillna(target_s)
                     df_sku_unico.drop(columns=[col_sap_name], inplace=True, errors='ignore')
             df_sku_unico.drop(columns=['CodGA_Str', 'G.A._Str'], inplace=True, errors='ignore')
 
         df_sku_unico['Ubicación(es)'] = df_sku_unico['Material_Unico'].map(mapa_ubicaciones)
 
         for col, val_def in [('Stock', -999.0), ('Cobertura', -999.0), ('Venta', -999.0), ('Monto Margen', -999.0)]:
-            df_sku_unico[col] = df_sku_unico[col].fillna(val_def) if col in df_sku_unico.columns else val_def
+            sanitizar_columna_num(df_sku_unico, col, val_def)
 
         for col, val_def in [('Estado', 'SIN DATOS'), ('Descripción', 'SIN DATOS'), ('EAN', 'SIN DATOS'), ('Departamento', 'SIN DATOS'), ('Sección', 'SIN DATOS'), ('Categoría', 'SIN DATOS'), ('Grupo de Artículo', 'SIN DATOS'), ('Ubicación(es)', pd.NA)]:
-            df_sku_unico[col] = df_sku_unico[col].fillna(val_def).astype(str).str.strip() if col in df_sku_unico.columns else val_def
+            sanitizar_columna_str(df_sku_unico, col, val_def)
 
         hora_lectura = pd.Timestamp.now('America/Lima').strftime("%d/%m/%Y - %I:%M %p")
         return df_pasillo_base, df_sku_unico, hora_lectura, None
@@ -2025,42 +2023,34 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
         st.markdown(f"<h3 style='color: {text_primary}; margin-top:0;'>Radiografía Operativa y Comercial de la Tienda</h3>", unsafe_allow_html=True)
         st.markdown(f"<p style='color: {text_muted}; font-size:0.88rem;'>Control de servicio en góndola (OSA), impacto financiero de quiebres y calidad del surtido exhibido.</p>", unsafe_allow_html=True)
         
-        # Métricas calculadas para la gerencia de operaciones
         tot_skus_plano = len(df_unicos)
         
         quiebres_df = df_unicos[(df_unicos['Estado'].str.strip().str.upper() == 'A') & (df_unicos['Stock_Num'] <= 0)]
         tot_quiebres = len(quiebres_df)
         pct_quiebres = (tot_quiebres / tot_skus_plano * 100) if tot_skus_plano > 0 else 0
         
-        # OSA: On-Shelf Availability (Disponibilidad en góndola de los SKUs activos en plano)
         osa_pct = 100.0 - pct_quiebres
         
-        # SKUs bloqueados ocupando espacio
         bloqueados_df = df_unicos[df_unicos['Estado'].str.strip().str.upper() == 'B']
         tot_bloqueados = len(bloqueados_df)
         
-        # SKUs con sobrestock / capital inmovilizado en repisa (Cobertura >= 30 días)
         sobredisp_df = df_unicos[df_unicos['Cob_Num'] >= 30]
         tot_sobredisp = len(sobredisp_df)
         
-        # Venta y margen total del planograma
         ventas_tot_plano = df_unicos['Venta_Num'].sum()
         margen_tot_plano = df_unicos['Margen_Num'].sum()
         margen_pct_plano = (margen_tot_plano / ventas_tot_plano * 100) if ventas_tot_plano > 0 else 0
         
-        # Venta promedio que representan los productos que hoy están en quiebre
         venta_en_riesgo = quiebres_df['Venta_Num'].sum()
         
-        # SKUs huérfanos (generan venta pero NO están en el planograma físico)
         df_no_plano = df_sku_unico_global[
             df_sku_unico_global['Ubicación(es)'].isna() | 
-            (df_sku_unico_global['Ubicación(es)'].astype(str).str.strip() == "") | 
-            (df_sku_unico_global['Ubicación(es)'].astype(str).str.strip() == "SIN DATOS")
+            (get_clean_series(df_sku_unico_global, 'Ubicación(es)').str.strip() == "") | 
+            (get_clean_series(df_sku_unico_global, 'Ubicación(es)').str.strip() == "SIN DATOS")
         ].copy()
         tot_no_plano = len(df_no_plano)
         ventas_no_plano = df_no_plano['Venta'].apply(lambda x: 0.0 if safe_float(x, -999.0) == -999.0 else safe_float(x, 0.0)).sum()
 
-        # TARJETAS DE INDICADORES DE PRIMER NIVEL
         st.markdown(f"""
             <div class="fin-kpi-container">
                 <div class="fin-kpi-card" style="border-bottom: 4px solid #10b981;">
@@ -2091,7 +2081,6 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             </div>
         """, unsafe_allow_html=True)
         
-        # ALERTAS DE IMPACTO FINANCIERO Y OPERATIVO DIRECTO
         col_alert1, col_alert2 = st.columns(2)
         with col_alert1:
             st.markdown(f"""
@@ -2111,7 +2100,6 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             
         st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
         
-        # SECCIÓN ANALÍTICA: QUIEBRES VS PARTICIPACIÓN DE VENTA Y SALUD DEL STOCK
         col_g1, col_g2 = st.columns([6.2, 3.8])
         
         with col_g1:
@@ -2231,7 +2219,6 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             st.plotly_chart(fig_h_pie, use_container_width=True, config={'displayModeBar': False})
             st.markdown('</div>', unsafe_allow_html=True)
             
-        # PLAN DE ACCIÓN INMEDIATO (MATRIZ GERENCIAL)
         st.markdown(f"""
             <div class="dash-card" style="margin-top: 4px;">
                 <div class="dash-card-header">
@@ -2738,7 +2725,7 @@ if df_pasillo_global is not None and not df_pasillo_global.empty:
             elif filtro_reporte == "Cobertura Alta (Sobreabastecido: ≥ 30 días)":
                 df_rep = df_rep[df_rep['Cobertura'] >= 30]
             elif filtro_reporte == "No está en el planograma":
-                df_rep = df_rep[df_rep['Ubicación(es)'].isna() | (df_rep['Ubicación(es)'].astype(str).str.strip() == "") | (df_rep['Ubicación(es)'].astype(str).str.strip() == "SIN DATOS")]
+                df_rep = df_rep[df_rep['Ubicación(es)'].isna() | (get_clean_series(df_rep, 'Ubicación(es)').str.strip() == "") | (get_clean_series(df_rep, 'Ubicación(es)').str.strip() == "SIN DATOS")]
                 
             cols_to_show = [
                 'COD REAL', 'EAN', 'Descripción', 'Estado', 'Ubicación(es)', 
